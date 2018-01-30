@@ -205,16 +205,21 @@ $(document).ready(function(){
           duration: 950,
           easing: 'linear',
           step: function (now) {
-            $this.text(Math.ceil(now));
+            var speedCurr = Math.ceil(now);
+            if(speedAnimation){
+              $this.text(speedCurr);
+            }
             if(!engineSpeedBar) {
-              var speedCurr = (isMPH) ? $this.text() * 1.6 : $this.text();
-              updateSpeedBar(Math.ceil(speedCurr));
+              updateSpeedBar(Math.ceil(isMPH ? speedCurr * 1.6 : speedCurr));
             }
           },
           complete: function () {
           }
         });
       });
+      if(!speedAnimation){
+        $('.vehicleSpeed').text(speedCurrent);
+      }
       // cufon stuff
       // --------------------------------------------------------------------------
       Cufon.replace('#digital .vehicleSpeed');
@@ -339,18 +344,22 @@ $(document).ready(function(){
       } else {
         GPSspeedCurrent = Math.floor(currentGPSSpeed);
       }
-      $('.gpsSpeedValue').each(function () {
-        var $this = $(this);
-        $({Counter: $this.text()}).animate({Counter: GPSspeedCurrent}, {
-          duration: 950,
-          easing: 'linear',
-          step: function (now) {
-            $this.text(Math.ceil(now));
-          },
-          complete: function () {
-          }
+      if(speedAnimation){
+        $('.gpsSpeedValue').each(function () {
+          var $this = $(this);
+          $({Counter: $this.text()}).animate({Counter: GPSspeedCurrent}, {
+            duration: 950,
+            easing: 'linear',
+            step: function (now) {
+              $this.text(Math.ceil(now));
+            },
+            complete: function () {
+            }
+          });
         });
-      });
+      } else {
+        $('.gpsSpeedValue').text(GPSspeedCurrent);
+      }
     }
   }
   // --------------------------------------------------------------------------
@@ -559,9 +568,11 @@ $(document).ready(function(){
             duration: 950,
             easing: 'linear',
             step: function (now) {
-              $this.text(Math.ceil(now));
+              var engineSpeedCurr = Math.ceil(now);
+              if(speedAnimation){
+                $this.text(engineSpeedCurr);
+              }
               if(engineSpeedBar) {
-                var engineSpeedCurr = $this.text();
                 updateSpeedBar(Math.ceil(engineSpeedCurr/45));
               }
             },
@@ -570,7 +581,9 @@ $(document).ready(function(){
             }
           });
         });
-        // --------------------------------------------------------------------------
+        if(!speedAnimation){
+          $('.engineSpeedValue').text(engineSpeedCurrent);
+        }
       }
     }
   }
@@ -689,13 +702,14 @@ $(document).ready(function(){
 
   setInterval(function (){
     updateTripTime();
-    updateIdleTime(speedCurrent);
+    if(speedCurrent === 0){
+      updateIdleTime(speedCurrent);
+    }
     if ((enableSmallSbSpeedo) && (!$('#SbSpeedo').hasClass('parking'))) {
       var visibleIcons = 0;
       $('.StatusBarCtrlIconContainer .StatusBarCtrlIcon').each(function(index) {
-        if($(this).is(':visible')){
+        if($(this).css('display').indexOf('inline-block') !== -1)
           visibleIcons++;
-        }
       });
       if(visibleIcons > 3){
         $('#SbSpeedo').addClass('morespace');
@@ -704,6 +718,7 @@ $(document).ready(function(){
       }
     }
   }, 1000);
+
   setInterval(function (){
     var sbSpeedoVal1 = (sbTemp) ? $('#SbSpeedo .outsideTempValue') : $('#SbSpeedo .gpsHeading');
     var sbSpeedoVal2 = (sbTemp) ? $('#SbSpeedo .Drv1AvlFuelEValue') : $('#SbSpeedo .gpsAltitudeValue');
@@ -716,11 +731,6 @@ $(document).ready(function(){
       }, 2000);
     }
   }, 4000);
-
-  setTimeout(function(){
-    retrievedata('vehicleData');
-    retrievedata('envData');
-  }, 15000);
 
   function updateSpeedBar(speed){
     if(barSpeedometerMod) {
@@ -786,4 +796,9 @@ $(document).ready(function(){
       }
     }
   }
+  // Start data retrieval
+  setTimeout(function(){
+    retrievedata('vehicleData');
+    retrievedata('envData');
+  }, 10000);
 });

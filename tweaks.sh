@@ -1,6 +1,6 @@
 #!/bin/sh
-# tweaks.sh - MZD Speedometer Version 5.2
-# Installer made with MZD-AIO  v2.7.6 https://github.com/Trevelopment/MZD-AIO
+# tweaks.sh - MZD Speedometer Version 5.2.1
+# Configurable Installer
 # By Diginix, Trezdog44, & Many Others
 # For more information visit https://mazdatweaks.com
 # Enjoy, Trezdog44 - Trevelopment.com
@@ -9,13 +9,17 @@
 hwclock --hctosys
 
 # AIO Variables
-AIO_VER=5.2
-AIO_DATE=2018.01.28
+AIO_VER=5.2.1
+AIO_DATE=2018.01.31
 
-KEEPBKUPS=1
-TESTBKUPS=1
+# Set to 1 to skip confirmation (& use default settings)
 SKIPCONFIRM=0
+# Set to 1 to force config choices (works with SKIPCONFIRM=1)
+SPD_CONFIG=0
+# Set to 1 to force uninstall (also works with SKIPCONFIRM=1)
+UNINSTALL=0
 
+# Installation functions
 timestamp()
 {
   date +"%D %T"
@@ -43,17 +47,9 @@ log_message()
   echo "$*" >> "${MYDIR}/AIO_log.txt"
   /bin/fsync "${MYDIR}/AIO_log.txt"
 }
-aio_info()
-{
-  if [ ${KEEPBKUPS} -eq 1 ]
-  then
-    echo "$*" 1>&2
-    echo "$*" >> "${MYDIR}/AIO_info.json"
-    /bin/fsync "${MYDIR}/AIO_info.json"
-  fi
-}
+
 # CASDK functions
-MZD_APP_SD=/tmp/mnt/sd_nav
+#MZD_APP_SD=/tmp/mnt/sd_nav
 MZD_APP_DIR=/tmp/mnt/resources/aio/mzd-casdk/apps
 get_casdk_mode()
 {
@@ -113,18 +109,6 @@ compatibility_check()
     echo 0
   fi
 }
-remove_aio_css()
-{
-  sed -i "/.. MZD-AIO-TI *${2} *CSS ../,/.. END AIO *${2} *CSS ../d" "${1}"
-  INPUT="${1##*/}               "
-  log_message "===               Removed CSS From ${INPUT:0:20}               ==="
-}
-remove_aio_js()
-{
-  sed -i "/.. MZD-AIO-TI.${2}.JS ../,/.. END AIO.${2}.JS ../d" "${1}"
-  INPUT=${1##*/}
-  log_message "===            Removed ${2:0:11} JavaScript From ${INPUT:0:13}    ==="
-}
 show_message()
 {
   sleep 5
@@ -136,18 +120,20 @@ show_message_OK()
 {
   sleep 4
   killall jci-dialog
-  #	log_message "= POPUP: $* "
-  /jci/tools/jci-dialog --confirm --title="INSTALL SPEEDOMETER?" --text="$*" --ok-label="YES - GO ON" --cancel-label="NO - ABORT"
-  if [ $? != 1 ]
+  #/jci/tools/jci-dialog --confirm --title="INSTALL SPEEDOMETER?" --text="$*" --ok-label="YES - GO ON" --cancel-label="NO - ABORT"
+  /jci/tools/jci-dialog --3-button-dialog --title="INSTALL SPEEDOMETER?" --text="$*" --ok-label="Install" --cancel-label="Configure" --button3-label="Uninstall"
+  METHOD=$?
+  killall jci-dialog
+  if [ $METHOD -eq 0 ]
   then
-    killall jci-dialog
+    return
+  elif [ $METHOD -eq 1 ]
+  then
+    SPD_CONFIG=1
     return
   else
-    log_message "********************* INSTALLATION ABORTED *********************"
-    show_message "INSTALLATION ABORTED! PLEASE UNPLUG USB DRIVE"
-    sleep 10
-    killall jci-dialog
-    exit 0
+    UNINSTALL=1
+    return
   fi
 }
 add_app_json()
@@ -245,458 +231,535 @@ remove_app_json()
     log_message "===                    Updated nativeApps.js                          ==="
   fi
 }
-# disable watchdog and allow write access
-echo 1 > /sys/class/gpio/Watchdog\ Disable/value
-mount -o rw,remount /
-# mount resources
-mount -o rw,remount /tmp/mnt/resources/
+# Start Installation
+start_install()
+{
+  # disable watchdog and allow write access
+  echo 1 > /sys/class/gpio/Watchdog\ Disable/value
+  mount -o rw,remount /
+  # mount resources
+  mount -o rw,remount /tmp/mnt/resources/
 
-MYDIR=$(dirname "$(readlink -f "$0")")
-CMU_VER=$(get_cmu_ver)
-CMU_SW_VER=$(get_cmu_sw_version)
-COMPAT_GROUP=$(compatibility_check)
-CASDK_MODE=$(get_casdk_mode)
+  MYDIR=$(dirname "$(readlink -f "$0")")
+  CMU_VER=$(get_cmu_ver)
+  CMU_SW_VER=$(get_cmu_sw_version)
+  COMPAT_GROUP=$(compatibility_check)
+  CASDK_MODE=$(get_casdk_mode)
 
-# save logs
-mkdir -p "${MYDIR}/bakups/test/"
-if [ -f "${MYDIR}/AIO_log.txt" ]; then
-  if [ ! -f "${MYDIR}/bakups/count.txt" ]; then
-    echo 0 > "${MYDIR}/bakups/count.txt"
+  # save logs
+  mkdir -p "${MYDIR}/bakups/test/"
+  if [ -f "${MYDIR}/AIO_log.txt" ]; then
+    if [ ! -f "${MYDIR}/bakups/count.txt" ]; then
+      echo 0 > "${MYDIR}/bakups/count.txt"
+    fi
+    logcount=$(cat ${MYDIR}/bakups/count.txt)
+    mv "${MYDIR}/AIO_log.txt" "${MYDIR}/bakups/AIO_log-${logcount}.txt"
+    echo $((logcount+1)) > "${MYDIR}/bakups/count.txt"
   fi
-  logcount=$(cat ${MYDIR}/bakups/count.txt)
-  mv "${MYDIR}/AIO_log.txt" "${MYDIR}/bakups/AIO_log-${logcount}.txt"
-  echo $((logcount+1)) > "${MYDIR}/bakups/count.txt"
-fi
-rm -f "${MYDIR}/AIO_info.json"
 
-log_message "========================================================================="
-log_message "=======================   START LOGGING TWEAKS...  ======================"
-log_message "======================= AIO v.${AIO_VER}  -  ${AIO_DATE} ======================"
-log_message "======================= CMU_SW_VER = ${CMU_SW_VER} ======================"
-log_message "=======================  COMPATIBILITY_GROUP  = ${COMPAT_GROUP} ======================="
-#log_message "======================== CMU_VER = ${CMU_VER} ====================="
-if [ $CASDK_MODE -eq 1 ]; then
-  log_message "=============================  CASDK MODE ==============================="
-  WELCOME_MSG="====== MZD SPEEDOMETER ${AIO_VER} ======\n\n===**** CASDK MODE ****===="
-else
-  log_message ""
-  WELCOME_MSG="==== MZD SPEEDOMETER  ${AIO_VER} ====="
-fi
-log_message "=======================   MYDIR = ${MYDIR}    ======================"
-log_message "==================      DATE = $(timestamp)        ================="
+  log_message "========================================================================="
+  log_message "=======================   START LOGGING TWEAKS...  ======================"
+  log_message "==================== SPEEDOMETER v.${AIO_VER}  -  ${AIO_DATE} =================="
+  log_message "======================= CMU_SW_VER = ${CMU_SW_VER} ======================"
+  log_message "=======================  COMPATIBILITY_GROUP  = ${COMPAT_GROUP} ======================="
+  #log_message "======================== CMU_VER = ${CMU_VER} ====================="
+  if [ $CASDK_MODE -eq 1 ]; then
+    log_message "=============================  CASDK MODE ==============================="
+    WELCOME_MSG="====== MZD SPEEDOMETER ${AIO_VER} ======\n\n===**** CASDK MODE ****===="
+  else
+    log_message ""
+    WELCOME_MSG="==== MZD SPEEDOMETER ${AIO_VER} ====="
+  fi
+  log_message "=======================   MYDIR = ${MYDIR}    ======================"
+  log_message "==================      DATE = $(timestamp)        ================="
 
-show_message "${WELCOME_MSG}"
+  show_message "${WELCOME_MSG}"
+}
 
-aio_info '{"info":{'
-aio_info \"CMU_SW_VER\": \"${CMU_SW_VER}\",
-aio_info \"AIO_VER\": \"${AIO_VER}\",
-aio_info \"USB_PATH\": \"${MYDIR}\",
-aio_info \"KEEPBKUPS\": \"${KEEPBKUPS}\"
-aio_info '},'
-# first test, if copy from MZD to usb drive is working to test correct mount point
-cp /jci/sm/sm.conf "${MYDIR}"
-if [ -e "${MYDIR}/sm.conf" ]
-then
-  log_message "===         Copytest to sd card successful, mount point is OK         ==="
-  log_message " "
-  rm -f "${MYDIR}/sm.conf"
-else
-  log_message "===     Copytest to sd card not successful, mount point not found!    ==="
-  /jci/tools/jci-dialog --title="ERROR!" --text="Mount point not found, have to reboot again" --ok-label='OK' --no-cancel &
-  sleep 5
-  reboot
-fi
-if [ $COMPAT_GROUP -eq 0 ] && [ $CMU_VER -lt 55 ]
-then
-  show_message "PLEASE UPDATE YOUR CMU FW TO VERSION 55 OR HIGHER\nYOUR FIRMWARE VERSION: ${CMU_SW_VER}\n\nUPDATE TO VERSION 55+ TO USE AIO"
-  mv ${MYDIR}/tweaks.sh ${MYDIR}/_tweaks.sh
-  show_message "INSTALLATION ABORTED REMOVE USB DRIVE NOW" && sleep 5
-  log_message "************************* INSTALLATION ABORTED **************************" && reboot
-  exit 1
-fi
- # Compatibility Check
-if [ $COMPAT_GROUP -ne 0 ]
-then
-  if [ ${SKIPCONFIRM} -eq 1 ]
+#Preinstall Operations
+preinstall_ops()
+{
+  # first test, if copy from MZD to usb drive is working to test correct mount point
+  cp /jci/sm/sm.conf "${MYDIR}"
+  if [ -e "${MYDIR}/sm.conf" ]
   then
-    show_message "MZD Speedometer v.${AIO_VER}\nDetected compatible version ${CMU_SW_VER}\nContinuing Installation..."
+    log_message "===         Copytest to sd card successful, mount point is OK         ==="
+    log_message " "
+    rm -f "${MYDIR}/sm.conf"
+  else
+    log_message "===     Copytest to sd card not successful, mount point not found!    ==="
+    /jci/tools/jci-dialog --title="ERROR!" --text="Mount point not found, have to reboot again" --ok-label='OK' --no-cancel &
     sleep 5
-  else
-    show_message_OK "MZD Speedometer v.${AIO_VER}\nDetected compatible version ${CMU_SW_VER}\n\n To continue installation choose YES\n To abort choose NO"
+    reboot
   fi
-  log_message "=======        Detected compatible version ${CMU_SW_VER}          ======="
-else
-  # Removing the comment (#) from the following line will allow MZD-AIO-TI to run with unknown fw versions ** ONLY MODIFY IF YOU KNOW WHAT YOU ARE DOING **
-  # show_message_OK "Detected previously unknown version ${CMU_SW_VER}!\n\n To continue anyway choose YES\n To abort choose NO"
-  log_message "Detected previously unknown version ${CMU_SW_VER}!"
-  show_message "Sorry, your CMU Version is not compatible with MZD Speedometer\nE-mail aio@mazdatweaks.com with your\nCMU version: ${CMU_SW_VER} for more information"
-  sleep 10
-  show_message "UNPLUG USB DRIVE NOW"
-  sleep 15
-  killall jci-dialog
-  # To run unknown FW you need to comment out or remove the following 2 lines
-  mount -o ro,remount /
-  exit 0
-fi
-# a window will appear for 4 seconds to show the beginning of installation
-show_message "START OF TWEAK INSTALLATION\nMZD Speedometer v.${AIO_VER} By: Trezdog44 & Diginix\n(This and the following message popup windows\n DO NOT have to be confirmed with OK)\nLets Go!"
-log_message " "
-log_message "======***********    BEGIN PRE-INSTALL OPERATIONS ...    **********======"
-
-# disable watchdogs in /jci/sm/sm.conf to avoid boot loops if something goes wrong
-if [ ! -e /jci/sm/sm.conf.org ]
-then
-  cp -a /jci/sm/sm.conf /jci/sm/sm.conf.org
-  log_message "===============  Backup of /jci/sm/sm.conf to sm.conf.org  =============="
-else
-  log_message "================== Backup of sm.conf.org already there! ================="
-fi
-sed -i 's/watchdog_enable="true"/watchdog_enable="false"/g' /jci/sm/sm.conf
-sed -i 's|args="-u /jci/gui/index.html"|args="-u /jci/gui/index.html --noWatchdogs"|g' /jci/sm/sm.conf
-log_message "===============  Watchdog In sm.conf Permanently Disabled! =============="
-
-# -- Enable userjs and allow file XMLHttpRequest in /jci/opera/opera_home/opera.ini - backup first - then edit
-if [ ! -e /jci/opera/opera_home/opera.ini.org ]
-then
-  cp -a /jci/opera/opera_home/opera.ini /jci/opera/opera_home/opera.ini.org
-  log_message "======== Backup /jci/opera/opera_home/opera.ini to opera.ini.org ========"
-else
-  log_message "================== Backup of opera.ini already there! ==================="
-fi
-sed -i 's/User JavaScript=0/User JavaScript=1/g' /jci/opera/opera_home/opera.ini
-count=$(grep -c "Allow File XMLHttpRequest=" /jci/opera/opera_home/opera.ini)
-skip_opera=$(grep -c "Allow File XMLHttpRequest=1" /jci/opera/opera_home/opera.ini)
-if [ "$skip_opera" -eq "0" ]
-then
-  if [ "$count" -eq "0" ]
+  if [ $COMPAT_GROUP -eq 0 ] && [ $CMU_VER -lt 55 ]
   then
-    sed -i '/User JavaScript=.*/a Allow File XMLHttpRequest=1' /jci/opera/opera_home/opera.ini
-  else
-    sed -i 's/Allow File XMLHttpRequest=.*/Allow File XMLHttpRequest=1/g' /jci/opera/opera_home/opera.ini
+    show_message "PLEASE UPDATE YOUR CMU FW TO VERSION 55 OR HIGHER\nYOUR FIRMWARE VERSION: ${CMU_SW_VER}\n\nUPDATE TO VERSION 55+ TO USE AIO"
+    mv ${MYDIR}/tweaks.sh ${MYDIR}/_tweaks.sh
+    show_message "INSTALLATION ABORTED REMOVE USB DRIVE NOW" && sleep 5
+    log_message "************************* INSTALLATION ABORTED **************************" && reboot
+    exit 1
   fi
-  log_message "============== Enabled Userjs & Allowed File Xmlhttprequest ============="
-  log_message "==================  In /jci/opera/opera_home/opera.ini =================="
-else
-  log_message "============== Userjs & File Xmlhttprequest Already Enabled ============="
-fi
+   # Compatibility Check
+  if [ $COMPAT_GROUP -ne 0 ]
+  then
+    if [ $SKIPCONFIRM -eq 1 ]
+    then
+      show_message "MZD Speedometer v.${AIO_VER}\nDetected compatible version ${CMU_SW_VER}\nContinuing Installation With Default Settings..."
+      sleep 5
+    else
+      show_message_OK "MZD Speedometer v.${AIO_VER}\nDetected compatible version ${CMU_SW_VER}\nContinue Installation With Default Settings\nTo Configure Settings Choose Config\nOr Choose To Uninstall"
+    fi
+    log_message "=======        Detected compatible version ${CMU_SW_VER}          ======="
+  else
+    # Removing the comment (#) from the following line will allow MZD-AIO-TI to run with unknown fw versions ** ONLY MODIFY IF YOU KNOW WHAT YOU ARE DOING **
+    # show_message_OK "Detected previously unknown version ${CMU_SW_VER}!\n\n To continue anyway choose YES\n To abort choose NO"
+    log_message "Detected previously unknown version ${CMU_SW_VER}!"
+    show_message "Sorry, your CMU Version is not compatible with MZD Speedometer\nE-mail aio@mazdatweaks.com with your\nCMU version: ${CMU_SW_VER} for more information"
+    sleep 10
+    show_message "UNPLUG USB DRIVE NOW"
+    sleep 15
+    killall jci-dialog
+    # To run unknown FW you need to comment out or remove the following 2 lines
+    mount -o ro,remount /
+    exit 0
+  fi
+  # a window will appear for 4 seconds to show the beginning of installation
+  show_message "START SPEEDOMETER INSTALLATION\nMZD Speedometer v.${AIO_VER} By: Trezdog44 & Diginix\n(This and the following message popup windows\n DO NOT have to be confirmed with OK)\nLets Go!"
+  log_message " "
+  log_message "======***********    BEGIN PRE-INSTALL OPERATIONS ...    **********======"
 
-# Remove fps.js if still exists
-if [ -e /jci/opera/opera_dir/userjs/fps.js ]
-then
-  mv /jci/opera/opera_dir/userjs/fps.js /jci/opera/opera_dir/userjs/fps.js.org
-  log_message "======== Moved /jci/opera/opera_dir/userjs/fps.js to fps.js.org ========="
-fi
-# Fix missing /tmp/mnt/data_persist/dev/bin/ if needed
-if [ ! -e /tmp/mnt/data_persist/dev/bin/ ]
-then
-  mkdir -p /tmp/mnt/data_persist/dev/bin/
-  log_message "======== Restored Missing Folder /tmp/mnt/data_persist/dev/bin/ ========="
-fi
-log_message "=========************ END PRE-INSTALL OPERATIONS ***************========="
-log_message " "
-log_message "==========************* BEGIN INSTALLING TWEAKS **************==========="
-log_message " "
+  # disable watchdogs in /jci/sm/sm.conf to avoid boot loops if something goes wrong
+  if [ ! -e /jci/sm/sm.conf.org ]
+  then
+    cp -a /jci/sm/sm.conf /jci/sm/sm.conf.org
+    log_message "===============  Backup of /jci/sm/sm.conf to sm.conf.org  =============="
+  else
+    log_message "================== Backup of sm.conf.org already there! ================="
+  fi
+  sed -i 's/watchdog_enable="true"/watchdog_enable="false"/g' /jci/sm/sm.conf
+  sed -i 's|args="-u /jci/gui/index.html"|args="-u /jci/gui/index.html --noWatchdogs"|g' /jci/sm/sm.conf
+  log_message "===============  Watchdog In sm.conf Permanently Disabled! =============="
 
-# start JSON array of backups
-if [ "${KEEPBKUPS}" -eq 1 ]
-then
-  aio_info '"Backups": ['
-fi
+  # -- Enable userjs and allow file XMLHttpRequest in /jci/opera/opera_home/opera.ini - backup first - then edit
+  if [ ! -e /jci/opera/opera_home/opera.ini.org ]
+  then
+    cp -a /jci/opera/opera_home/opera.ini /jci/opera/opera_home/opera.ini.org
+    log_message "======== Backup /jci/opera/opera_home/opera.ini to opera.ini.org ========"
+  else
+    log_message "================== Backup of opera.ini already there! ==================="
+  fi
+  sed -i 's/User JavaScript=0/User JavaScript=1/g' /jci/opera/opera_home/opera.ini
+  count=$(grep -c "Allow File XMLHttpRequest=" /jci/opera/opera_home/opera.ini)
+  skip_opera=$(grep -c "Allow File XMLHttpRequest=1" /jci/opera/opera_home/opera.ini)
+  if [ "$skip_opera" -eq "0" ]
+  then
+    if [ "$count" -eq "0" ]
+    then
+      sed -i '/User JavaScript=.*/a Allow File XMLHttpRequest=1' /jci/opera/opera_home/opera.ini
+    else
+      sed -i 's/Allow File XMLHttpRequest=.*/Allow File XMLHttpRequest=1/g' /jci/opera/opera_home/opera.ini
+    fi
+    log_message "============== Enabled Userjs & Allowed File Xmlhttprequest ============="
+    log_message "==================  In /jci/opera/opera_home/opera.ini =================="
+  else
+    log_message "============== Userjs & File Xmlhttprequest Already Enabled ============="
+  fi
 
-# Speedometer v4.8
-show_message "INSTALL SPEEDOMETER v5.2 ..."
-log_message "==========**************** INSTALL SPEEDOMETER *****************========="
+  # Remove fps.js if still exists
+  if [ -e /jci/opera/opera_dir/userjs/fps.js ]
+  then
+    mv /jci/opera/opera_dir/userjs/fps.js /jci/opera/opera_dir/userjs/fps.js.org
+    log_message "======== Moved /jci/opera/opera_dir/userjs/fps.js to fps.js.org ========="
+  fi
+  # Fix missing /tmp/mnt/data_persist/dev/bin/ if needed
+  if [ ! -e /tmp/mnt/data_persist/dev/bin/ ]
+  then
+    mkdir -p /tmp/mnt/data_persist/dev/bin/
+    log_message "======== Restored Missing Folder /tmp/mnt/data_persist/dev/bin/ ========="
+  fi
+  log_message "=========************ END PRE-INSTALL OPERATIONS ***************========="
+  log_message " "
+  
+  if [ $UNINSTALL -eq 1 ]
+  then
+    show_message "UNINSTALL SPEEDOMETER ..."
+    log_message "==========************** UNINSTALLING SPEEDOMETER ************==========="
+  else
+    show_message "INSTALL SPEEDOMETER v5.2 ..."
+    log_message "==========**************** INSTALL SPEEDOMETER *****************========="
+  fi
+  log_message " "
 
-log_message "===                 Begin Installation of Speedometer                 ==="
-if [ "${TESTBKUPS}" = "1" ]
-then
   cp /jci/scripts/stage_wifi.sh "${MYDIR}/bakups/test/stage_wifi_speedometer-before.sh"
   cp /jci/opera/opera_dir/userjs/additionalApps.json "${MYDIR}/bakups/test/additionalApps_speedometer-1._before.json"
-fi
 
-### kills all WebSocket daemons
-pkill websocketd
+  ### kills all WebSocket daemons
+  pkill websocketd
 
-### save speedometer-config.js
-if [ -e /jci/gui/apps/_speedometer/js/speedometer-config.js ]
-then
-  cp -a /jci/gui/apps/_speedometer/js/speedometer-config.js /tmp/root
-  log_message "===             Save Temporary Copy of speedometer-config.js          ==="
-fi
+  ### save speedometer-config.js
+  if [ -e /jci/gui/apps/_speedometer/js/speedometer-config.js ]
+  then
+    cp -a /jci/gui/apps/_speedometer/js/speedometer-config.js /tmp/root
+    log_message "===             Save Temporary Copy of speedometer-config.js          ==="
+  fi
+}
 
-### cleanup old versions
-rm -fr /jci/gui/addon-player
-rm -fr /jci/gui/addon-speedometer
-rm -fr /jci/gui/speedometer
-rm -fr /jci/gui/apps/_speedometer
+# Clean up speedometer files - This always runs before 
+# speedo_install to uninstall old versions 
+speedo_cleanup()
+{
+  rm -fr /jci/gui/addon-player
+  rm -fr /jci/gui/addon-speedometer
+  rm -fr /jci/gui/speedometer
+  rm -fr /jci/gui/apps/_speedometer
 
-sed -i '/Speedo-Compass-Video/d' /jci/scripts/stage_wifi.sh
-sed -i '/v3.2/d' /jci/scripts/stage_wifi.sh
-sed -i '/Removed requirement/d' /jci/scripts/stage_wifi.sh
-sed -i '/# mount /d' /jci/scripts/stage_wifi.sh
-sed -i '/Added additional/d' /jci/scripts/stage_wifi.sh
-sed -i '/get-vehicle-speed/d' /jci/scripts/stage_wifi.sh
-sed -i '/get-vehicle-data-other/d' /jci/scripts/stage_wifi.sh
-sed -i '/get-gps-data/d' /jci/scripts/stage_wifi.sh
-sed -i '/Need to set defaults/d' /jci/scripts/stage_wifi.sh
-sed -i '/myVideoList /d' /jci/scripts/stage_wifi.sh
-sed -i '/playbackAction /d' /jci/scripts/stage_wifi.sh
-sed -i '/playbackOption /d' /jci/scripts/stage_wifi.sh
-sed -i '/playbackStatus /d' /jci/scripts/stage_wifi.sh
-sed -i '/playback/d' /jci/scripts/stage_wifi.sh
-sed -i '/myVideoList/d' /jci/scripts/stage_wifi.sh
-sed -i '/Video player action watch/d' /jci/scripts/stage_wifi.sh
-sed -i '/playback-action.sh/d' /jci/scripts/stage_wifi.sh
-sed -i '/Log data collection/d' /jci/scripts/stage_wifi.sh
-sed -i '/get-log-data.sh/d' /jci/scripts/stage_wifi.sh
-sed -i '/addon-speedometer.sh &/d' /jci/scripts/stage_wifi.sh
-sed -i '/addon-player.sh &/d' /jci/scripts/stage_wifi.sh
-sed -i '/stage_vehSpeed.sh/d' /jci/scripts/stage_wifi.sh
-sed -i '/mount of SD card/d' /jci/scripts/stage_wifi.sh
-sed -i '/sleep 40/d' /jci/scripts/stage_wifi.sh
-sed -i '/sleep 55/d' /jci/scripts/stage_wifi.sh
-sed -i '/sleep 50/d' /jci/scripts/stage_wifi.sh
-sed -i '/umount -l/d' /jci/scripts/stage_wifi.sh
-sed -i '/sleep 25/d' /jci/scripts/stage_wifi.sh
-sed -i '/sleep 4/d' /jci/scripts/stage_wifi.sh
-sed -i '/sleep 6/d' /jci/scripts/stage_wifi.sh
-
-# remove old websocket
-if grep -Fq "55554" /jci/scripts/stage_wifi.sh
-then
+  sed -i '/Speedo-Compass-Video/d' /jci/scripts/stage_wifi.sh
+  sed -i '/v3.2/d' /jci/scripts/stage_wifi.sh
+  sed -i '/Removed requirement/d' /jci/scripts/stage_wifi.sh
+  sed -i '/# mount /d' /jci/scripts/stage_wifi.sh
+  sed -i '/Added additional/d' /jci/scripts/stage_wifi.sh
+  sed -i '/get-vehicle-speed/d' /jci/scripts/stage_wifi.sh
+  sed -i '/get-vehicle-data-other/d' /jci/scripts/stage_wifi.sh
+  sed -i '/get-gps-data/d' /jci/scripts/stage_wifi.sh
+  sed -i '/Need to set defaults/d' /jci/scripts/stage_wifi.sh
+  sed -i '/myVideoList /d' /jci/scripts/stage_wifi.sh
+  sed -i '/playbackAction /d' /jci/scripts/stage_wifi.sh
+  sed -i '/playbackOption /d' /jci/scripts/stage_wifi.sh
+  sed -i '/playbackStatus /d' /jci/scripts/stage_wifi.sh
+  sed -i '/playback/d' /jci/scripts/stage_wifi.sh
+  sed -i '/myVideoList/d' /jci/scripts/stage_wifi.sh
+  sed -i '/Video player action watch/d' /jci/scripts/stage_wifi.sh
+  sed -i '/playback-action.sh/d' /jci/scripts/stage_wifi.sh
+  sed -i '/Log data collection/d' /jci/scripts/stage_wifi.sh
+  sed -i '/get-log-data.sh/d' /jci/scripts/stage_wifi.sh
+  sed -i '/addon-speedometer.sh &/d' /jci/scripts/stage_wifi.sh
+  sed -i '/addon-player.sh &/d' /jci/scripts/stage_wifi.sh
+  sed -i '/stage_vehSpeed.sh/d' /jci/scripts/stage_wifi.sh
+  sed -i '/mount of SD card/d' /jci/scripts/stage_wifi.sh
+  sed -i '/sleep 40/d' /jci/scripts/stage_wifi.sh
+  sed -i '/sleep 55/d' /jci/scripts/stage_wifi.sh
+  sed -i '/sleep 50/d' /jci/scripts/stage_wifi.sh
+  sed -i '/umount -l/d' /jci/scripts/stage_wifi.sh
+  sed -i '/sleep 25/d' /jci/scripts/stage_wifi.sh
+  sed -i '/sleep 4/d' /jci/scripts/stage_wifi.sh
+  sed -i '/sleep 6/d' /jci/scripts/stage_wifi.sh
   sed -i '/55554/d' /jci/scripts/stage_wifi.sh
   sed -i '/9969/d' /jci/scripts/stage_wifi.sh
   sed -i '/## Speedometer/d' /jci/scripts/stage_wifi.sh
-fi
 
-# delete empty lines
-sed -i '/^ *$/ d' /jci/scripts/stage_wifi.sh
-sed -i '/#!/ a\ ' /jci/scripts/stage_wifi.sh
+  # delete empty lines
+  sed -i '/^ *$/ d' /jci/scripts/stage_wifi.sh
+  sed -i '/#!/ a\ ' /jci/scripts/stage_wifi.sh
 
-# Remove startup file from userjs
-rm -f /jci/opera/opera_dir/userjs/speedometer-startup.js
-rm -f /jci/opera/opera_dir/userjs/speedometer.js
+  # Remove startup file from userjs
+  rm -f /jci/opera/opera_dir/userjs/speedometer-startup.js
+  rm -f /jci/opera/opera_dir/userjs/speedometer.js
+}
 
-cp -a ${MYDIR}/config/speedometer/jci/gui/apps/* /jci/gui/apps/
-log_message "===             Copied folder /jci/gui/apps/_speedometer              ==="
-find /jci/gui/apps/_*/ -type f -name '*.js' -exec chmod 755 {} \;
-find /jci/gui/apps/_*/ -type f -name '*.sh' -exec chmod 755 {} \;
-
-if [ ! -e /jci/gui/addon-common/websocketd ]  || [ ! -e /jci/gui/addon-common/cufon-yui.js ]; then
-  cp -a "${MYDIR}/config/jci/gui/addon-common/" /jci/gui/
-  chmod 755 /jci/gui/addon-common/websocketd
-  log_message "===   Copied websocketd and jquery.min.js to /jci/gui/addon-common/   ==="
-else
-  log_message "===       websocketd and jquery.min.js available, no copy needed      ==="
-fi
-
-# check for 1st line of stage_wifi.sh
-if grep -Fq "#!/bin/sh" /jci/scripts/stage_wifi.sh
-then
-  log_message "===                 1st line of stage_wifi.sh is OK                   ==="
-else
-  echo "#!/bin/sh" > /jci/scripts/stage_wifi.sh
-  log_message "===         Missing 1st line of stage_wifi.sh, copied new one         ==="
-fi
-
-# add commands for speedometer to stage_wifi.sh
-if [ -e /jci/scripts/stage_wifi.sh ]
-then
-  if grep -Fq "speedometer.sh &" /jci/scripts/stage_wifi.sh
+# Choose Language for installation config
+choose_language()
+{
+  killall jci-dialog
+  /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="STATUSBAR LANGUAGE?" --ok-label="English" --cancel-label="German" --button3-label="More"
+  CHOICE=$?
+  killall jci-dialog
+  if [ $CHOICE -eq 1 ]
   then
-    log_message "===  Speedometer entry already exists in /jci/scripts/stage_wifi.sh   ==="
-  else
-    sed -i '/#!/ a\### Speedometer' /jci/scripts/stage_wifi.sh
-    sleep 1
-    sed -i '/Speedometer/ i\ ' /jci/scripts/stage_wifi.sh
-    sed -i '/### Speedometer/ a\/jci/gui/addon-common/websocketd --port=9969 /jci/gui/apps/_speedometer/sh/speedometer.sh &' /jci/scripts/stage_wifi.sh
-    log_message "===       Added speedometer entry to /jci/scripts/stage_wifi.sh       ==="
-    cp /jci/scripts/stage_wifi.sh "${MYDIR}/bakups/test/stage_wifi_speedometer-after.sh"
+    sed -i 's/var language = "EN";/var language = "DE";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+    log_message "===              CHANGED SPEEDOMETER TO GERMAN VERSION               ==="
+  elif [ $CHOICE -eq 2 ]
+  then
+    /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="STATUSBAR LANGUAGE?" --ok-label="Spanish" --cancel-label="French" --button3-label="More"
+    CHOICE=$?
+    killall jci-dialog
+    if [ $CHOICE -eq 0 ]
+    then
+      # change to spanish version
+      # show_message "CHANGE SPEEDOMETER TO SPANISH..."
+      sed -i 's/var language = "EN";/var language = "ES";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+      log_message "===              CHANGED SPEEDOMETER TO SPANISH VERSION               ==="
+    elif [ $CHOICE -eq 1 ]
+    then
+      # change to french version
+      # show_message "CHANGE SPEEDOMETER TO FRENCH..."
+      sed -i 's/var language = "EN";/var language = "FR";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+      log_message "===              CHANGED SPEEDOMETER TO FRENCH VERSION                ==="
+    else
+      /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="STATUSBAR LANGUAGE?" --ok-label="Polish" --cancel-label="Italian" --button3-label="More"
+      CHOICE=$?
+      killall jci-dialog
+      if [ $CHOICE -eq 0 ]
+      then
+        # change to polish version
+        # show_message "CHANGE SPEEDOMETER TO POLISH..."
+        sed -i 's/var language = "EN";/var language = "PL";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        log_message "===               CHANGED SPEEDOMETER TO POLISH VERSION               ==="
+      elif [ $CHOICE -eq 1 ]
+      then
+        # change to Italian version
+        # show_message "CHANGE SPEEDOMETER TO ITALIAN..."
+        sed -i 's/var language = "EN";/var language = "IT";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        log_message "===               CHANGED SPEEDOMETER TO ITALIAN VERSION              ==="
+      else
+        /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="STATUSBAR LANGUAGE?" --ok-label="Slovak" --cancel-label="Turkish" --button3-label="Back To 1st"
+        CHOICE=$?
+        killall jci-dialog
+        if [ $CHOICE -eq 0 ]
+        then
+          # change to slovak version
+          # show_message "CHANGE SPEEDOMETER TO SLOVAK..."
+          sed -i 's/var language = "EN";/var language = "SK";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+          log_message "===                CHANGED SPEEDOMETER TO SLOVAK VERSION              ==="
+        elif [ $CHOICE -eq 1 ]
+        then
+          # change to Turkish version
+          # show_message "CHANGE SPEEDOMETER TO TURKISH..."
+          sed -i 's/var language = "EN";/var language = "TR";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+          log_message "===              CHANGED SPEEDOMETER TO TURKISH VERSION               ==="
+        else
+          # If we have gotten this far we need to start over
+          choose_language
+        fi
+      fi
+    fi
   fi
-fi
+}
 
-# copy additionalApps.js, if not already present
-if [ $CASDK_MODE -eq 0 ]
-then
-  log_message "===           No additionalApps.js available, will copy one           ==="
-  cp -a ${MYDIR}/config/jci/opera/opera_dir/userjs/additionalApps.js /jci/opera/opera_dir/userjs/ && CASDK_MODE=1
-  find /jci/opera/opera_dir/userjs/ -type f -name '*.js' -exec chmod 755 {} \;
-fi
+# Install speedometer
+speedo_install()
+{
+  if [ $UNINSTALL -eq 0 ]
+  then
+    cp -a ${MYDIR}/config/speedometer/jci/gui/apps/* /jci/gui/apps/
+    log_message "===             Copied folder /jci/gui/apps/_speedometer              ==="
+    find /jci/gui/apps/_*/ -type f -name '*.js' -exec chmod 755 {} \;
+    find /jci/gui/apps/_*/ -type f -name '*.sh' -exec chmod 755 {} \;
 
-# create additionalApps.json file from scratch if the file does not exist
-if [ ! -e /jci/opera/opera_dir/userjs/additionalApps.json ]
-then
-  echo "[" > /jci/opera/opera_dir/userjs/additionalApps.json
-  echo "]" >> /jci/opera/opera_dir/userjs/additionalApps.json
-  chmod 755 /jci/opera/opera_dir/userjs/additionalApps.json
-  log_message "===                   Created additionalApps.json                     ==="
-fi
+    if [ ! -e /jci/gui/addon-common/websocketd ]  || [ ! -e /jci/gui/addon-common/cufon-yui.js ]; then
+      cp -a "${MYDIR}/config/jci/gui/addon-common/" /jci/gui/
+      chmod 755 /jci/gui/addon-common/websocketd
+      log_message "===   Copied websocketd and jquery.min.js to /jci/gui/addon-common/   ==="
+    else
+      log_message "===       websocketd and jquery.min.js available, no copy needed      ==="
+    fi
 
-# call function add_app_json to modify additionalApps.json
-add_app_json "_speedometer" "Speedometer" "speedometer-startup.js"
+    # check for 1st line of stage_wifi.sh
+    if grep -Fq "#!/bin/sh" /jci/scripts/stage_wifi.sh
+    then
+      log_message "===                 1st line of stage_wifi.sh is OK                   ==="
+    else
+      echo "#!/bin/sh" > /jci/scripts/stage_wifi.sh
+      log_message "===         Missing 1st line of stage_wifi.sh, copied new one         ==="
+    fi
 
-# add preload to the AA json entry if needed
-if ! grep -q "speedometer-startup.js" /jci/opera/opera_dir/userjs/additionalApps.json
-then
-	sed -i 's/"label": "Speedometer" \}/"label": "Speedometer", "preload": "speedometer-startup.js" \}/g' /jci/opera/opera_dir/userjs/additionalApps.json
-	log_message "===     Added speedometer-startup.js to speedometer json entry        ==="
-fi
+    # add commands for speedometer to stage_wifi.sh
+    if [ -e /jci/scripts/stage_wifi.sh ]
+    then
+      if grep -Fq "speedometer.sh &" /jci/scripts/stage_wifi.sh
+      then
+        log_message "===  Speedometer entry already exists in /jci/scripts/stage_wifi.sh   ==="
+      else
+        sed -i '/#!/ a\### Speedometer' /jci/scripts/stage_wifi.sh
+        sleep 1
+        sed -i '/Speedometer/ i\ ' /jci/scripts/stage_wifi.sh
+        sed -i '/### Speedometer/ a\/jci/gui/addon-common/websocketd --port=9969 /jci/gui/apps/_speedometer/sh/speedometer.sh &' /jci/scripts/stage_wifi.sh
+        log_message "===       Added speedometer entry to /jci/scripts/stage_wifi.sh       ==="
+        cp /jci/scripts/stage_wifi.sh "${MYDIR}/bakups/test/stage_wifi_speedometer-after.sh"
+      fi
+    fi
 
-# change compass rotating depending on NAV SD card inside or not
-if [ ! -d /mnt/sd_nav/content/speedcam ] || [ ${COMPAT_GROUP} -ne 1  ]
-then
-  sed -i 's/var noNavSD = false;/var noNavSD = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
-  log_message "===    Changed compass rotating, because no NAV SD card is inside     ==="
-fi
-if [ ${SPEEDCOLOR} != 0 ]
-then
-  rm -f /jci/gui/common/images/*.aio
-  touch /jci/gui/common/images/${SPEEDCOLOR}.aio
-  log_message "===                   Set Speedometer Color: ${SPEEDCOLOR}                    ==="
-fi
+    # copy additionalApps.js, if not already present
+    if [ $CASDK_MODE -eq 0 ]
+    then
+      log_message "===           No additionalApps.js available, will copy one           ==="
+      cp -a ${MYDIR}/config/jci/opera/opera_dir/userjs/additionalApps.js /jci/opera/opera_dir/userjs/ && CASDK_MODE=1
+      find /jci/opera/opera_dir/userjs/ -type f -name '*.js' -exec chmod 755 {} \;
+    fi
 
-# if another color scheme is active, then change speeometer graphics too
-if [ -e /jci/gui/common/images/Blue.aio ]
-then
-  cp -a ${MYDIR}/config/speedometer/color/Blue/* /jci/gui/apps/_speedometer/templates/SpeedoMeter/images/
-  log_message "===               Change speedometer graphics to blue                 ==="
-fi
+    # create additionalApps.json file from scratch if the file does not exist
+    if [ ! -e /jci/opera/opera_dir/userjs/additionalApps.json ]
+    then
+      echo "[" > /jci/opera/opera_dir/userjs/additionalApps.json
+      echo "]" >> /jci/opera/opera_dir/userjs/additionalApps.json
+      chmod 755 /jci/opera/opera_dir/userjs/additionalApps.json
+      log_message "===                   Created additionalApps.json                     ==="
+    fi
 
-if [ -e /jci/gui/common/images/Green.aio ]
-then
-  cp -a ${MYDIR}/config/speedometer/color/Green/* /jci/gui/apps/_speedometer/templates/SpeedoMeter/images/
-  log_message "===               Change speedometer graphics to green                ==="
-fi
+    # call function add_app_json to modify additionalApps.json
+    add_app_json "_speedometer" "Speedometer" "speedometer-startup.js"
 
-if [ -e /jci/gui/common/images/Orange.aio ]
-then
-  cp -a ${MYDIR}/config/speedometer/color/Orange/* /jci/gui/apps/_speedometer/templates/SpeedoMeter/images/
-  log_message "===               Change speedometer graphics to orange               ==="
-fi
+    # add preload to the AA json entry if needed
+    if ! grep -q "speedometer-startup.js" /jci/opera/opera_dir/userjs/additionalApps.json
+    then
+      sed -i 's/"label": "Speedometer" \}/"label": "Speedometer", "preload": "speedometer-startup.js" \}/g' /jci/opera/opera_dir/userjs/additionalApps.json
+      log_message "===     Added speedometer-startup.js to speedometer json entry        ==="
+    fi
 
-if [ -e /jci/gui/common/images/Pink.aio ]
-then
-  cp -a ${MYDIR}/config/speedometer/color/Pink/* /jci/gui/apps/_speedometer/templates/SpeedoMeter/images/
-  log_message "===                Change speedometer graphics to pink                ==="
-fi
+    # change compass rotating depending on NAV SD card inside or not
+    if [ ! -d /mnt/sd_nav/content/speedcam ] || [ ${COMPAT_GROUP} -ne 1  ]
+    then
+      sed -i 's/var noNavSD = false;/var noNavSD = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+      log_message "===    Changed compass rotating, because no NAV SD card is inside     ==="
+    fi
 
-if [ -e /jci/gui/common/images/Purple.aio ]
-then
-  cp -a ${MYDIR}/config/speedometer/color/Purple/* /jci/gui/apps/_speedometer/templates/SpeedoMeter/images/
-  log_message "===               Change speedometer graphics to purple               ==="
-fi
+    if [ $SPD_CONFIG -eq 1 ]
+    then
+      choose_language
+      killall jci-dialog
+      
+      /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="SPEED UNIT?" --ok-label="KM/H" --cancel-label="MPH"
+      CHOICE=$?
+      killall jci-dialog
+      # change to version with mph
+      # show_message "CHANGE SPEEDOMETER TO MPH ..."
+      if [ $CHOICE -eq 0 ]
+      then
+        sed -i 's/var isMPH = true;/var isMPH = false;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        log_message "===                   CHANGED SPEEDOMETER TO KM/H                     ==="
+      fi
 
-if [ -e /jci/gui/common/images/Silver.aio ]
-then
-  cp -a ${MYDIR}/config/speedometer/color/Silver/* /jci/gui/apps/_speedometer/templates/SpeedoMeter/images/
-  log_message "===               Change speedometer graphics to silver               ==="
-fi
+      /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="SPEEDOMETER BACKGROUND?" --ok-label="YES" --cancel-label="NO"
+      CHOICE=$?
+      killall jci-dialog
+      if [ $CHOICE -eq 0 ]
+      then
+        # Original speedometer background
+        # show_message "SET ORIGINAL SPEEDOMETER BACKGROUND ..."
+        sed -i 's/var original_background_image = false;/var original_background_image = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        log_message "===                SET ORIGINAL SPEEDOMETER BACKGROUND                ==="
+      fi
 
-if [ -e /jci/gui/common/images/Yellow.aio ]
-then
-  cp -a ${MYDIR}/config/speedometer/color/Yellow/* /jci/gui/apps/_speedometer/templates/SpeedoMeter/images/
-  log_message "===               Change speedometer graphics to yellow               ==="
-fi
+      /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="TEMPERATURE UNIT?" --ok-label="C" --cancel-label="F"
+      CHOICE=$?
+      killall jci-dialog
+      if [ $CHOICE -eq 1 ]
+      then
+        # change temp from C to F
+        sed -i 's/var tempIsF = false;/var tempIsF = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        log_message "===                   TEMPERATURE SET TO FAHRENHEIT                   ==="
+      fi
 
-# change to english version
-# show_message "CHANGE SPEEDOMETER TO ENGLISH..."
-sed -i 's/var language = "DE";/var language = "EN";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
-log_message "===              CHANGED SPEEDOMETER TO ENGLISH VERSION               ==="
+      /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="DIGITAL CLOCK FONT?" --ok-label="YES" --cancel-label="NO"
+      CHOICE=$?
+      killall jci-dialog
+      if [ $CHOICE -eq 0 ]
+      then
+        # Digital Clock Mod
+        sed -i '/Remove this/d' /jci/gui/apps/_speedometer/css/StatusBarSpeedometer.css
+        log_message "===                     APPLY DIGITAL CLOCK MOD                       ==="
+      fi
+      
+      /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="STATUSBAR SPEEDOMETER?" --ok-label="Car Speed" --cancel-label="GPS Speed" --button3-label="None"
+      CHOICE=$?
+      killall jci-dialog
+      if [ $CHOICE -eq 0 ]
+      then
+        # show the vehicle speed instead of the gps speed in the small speedometer
+        # show_message "CHANGE TO VEHICLE SPEED IN SMALL SPEEDO ..."
+        sed -i 's/<div class="gpsSpeedValue">0<\/div>/<div class="vehicleSpeed">0<\/div>/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        sed -i 's/.gpsSpeedValue/.vehicleSpeed/g' /jci/gui/apps/_speedometer/css/StatusBarSpeedometer.css
+        log_message "===              CHANGE TO VEHICLE SPEED IN SMALL SPEEDO              ==="
+      elif [ $CHOICE -eq 2 ]
+      then
+        # no small speedometer in statusbar
+        # show_message "DISABLE SMALL SPEEDOMETER IN STATUSBAR ..."
+        sed -i 's/var enableSmallSbSpeedo = true;/var enableSmallSbSpeedo = false;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        log_message "===              DISABLE SMALL SPEEDOMETER IN STATUSBAR               ==="
+      fi
+      
+      /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="SPEED COUNTER ANIMATION?" --ok-label="ENABLE" --cancel-label="DISABLE"
+      CHOICE=$?
+      killall jci-dialog
+      if [ $CHOICE -eq 1 ]
+      then
+        # Disable counter animation
+        sed -i 's/var speedAnimation = true;/var speedAnimation = false;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        log_message "===                 DISABLE SPEED COUNTER ANIMATION                   ==="
+      fi
+    fi    
+    
+    show_message "INSTALLING SPEEDOMETER MODS ...."
+    
+    log_message "=======**********    END INSTALLATION OF SPEEDOMETER    **********======="
+    log_message " "
 
-# change to version with mph
-# show_message "CHANGE SPEEDOMETER TO MPH ..."
-sed -i 's/var isMPH = false;/var isMPH = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
-log_message "===                    CHANGED SPEEDOMETER TO MPH                     ==="
+    # show_message "INSTALL SPEEDOMETER VARIANT"
+    log_message "========************* INSTALL SPEEDOMETER VARIANT ... ***********========"
 
-# csetting speedometer variant start in analog mode
-# show_message "SETTING ANALOG STARTUP MODE ..."
-sed -i 's/var startAnalog = false;/var startAnalog = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
-log_message "===               START MODED SPEEDOMETER IN ANALOG MODE              ==="
+    # Copy modded speedo files
+    cp -a ${MYDIR}/config/speedometer_mod/jci /
+    log_message "===                  Speedometer Variant Installed                    ==="
 
-# Original speedometer background
-# show_message "SET ORIGINAL SPEEDOMETER BACKGROUND ..."
-sed -i 's/var original_background_image = false;/var original_background_image = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
-log_message "===                SET ORIGINAL SPEEDOMETER BACKGROUND                ==="
+    chmod 755 /jci/fonts/Crysta.ttf
+    chmod 755 /jci/fonts/CHN/Crysta.ttf
+    chmod 755 /jci/fonts/JP/Crysta.ttf
 
-# change temp from C to F
-sed -i 's/var tempIsF = false;/var tempIsF = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
-log_message "===                   TEMPERATURE SET TO FAHRENHEIT                   ==="
+    log_message "=======******** END INSTALLATION OF SPEEDOMETER VARIANT *********========"
+    log_message " "
 
-# Digital Clock Mod
-sed -i '/Remove this/d' /jci/gui/apps/_speedometer/css/StatusBarSpeedometer.css
-log_message "===                     APPLY DIGITAL CLOCK MOD                       ==="
+    # Speedometer v5.0
+    # show_message "INSTALL DIGITAL BAR SPEEDOMETER VARIANT ..."
+    log_message "=========********** INSTALL DIGITAL BAR SPEEDOMETER ************========="
 
-if [ ${TESTBKUPS} = "1" ]
-then
+    cp -a ${MYDIR}/config/speedometer_bar/jci /
+    log_message "===                 Speedometer Bar Variant Installed                 ==="
+
+    sed -i 's/var barSpeedometerMod = false;/var barSpeedometerMod = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+    log_message "===       Set flag for bar speedometer in speedometer-startup.js      ==="
+
+    if [ -e ${MYDIR}/config/speedometer_bar/speedometer-config.js ]
+    then
+      cp -a ${MYDIR}/config/speedometer_bar/speedometer-config.js /jci/gui/apps/_speedometer/js
+      log_message "===                  Copied Speedometer Config File                   ==="
+    elif [ -e /tmp/root/speedometer-config.js ]
+    then
+      cp -a /tmp/root/speedometer-config.js /jci/gui/apps/_speedometer/js
+      log_message "===               Reuse Previous Speedometer Config File              ==="
+    else
+      log_message "===       NO 'speedometer-config.js' FILE FOUND... USING DEFAULT      ==="
+    fi
+    chmod -R 755 /jci/gui/apps/_speedometer/
+    log_message "=========************ END DIGITAL BAR SPEEDOMETER **************========="
+    log_message " "
+
+    log_message " "
+    sleep 2
+    log_message "======================= END OF TWEAKS INSTALLATION ======================"
+    show_message "========== END OF SPEEDOMETER INSTALLATION =========="
+  else
+    remove_app_json "_speedometer"
+    log_message "====================== END OF TWEAKS UNINSTALLATION ====================="
+    show_message "========== END OF SPEEDOMETER UNINSTALLATION =========="
+  fi   
+}
+
+# End of installation
+end_install()
+{
   cp -a /jci/gui/apps/_speedometer/js/speedometer-startup.js ${MYDIR}/bakups/test/
   cp -a /jci/scripts/stage_wifi.sh ${MYDIR}/bakups/test/stage_wifi-after_speedo.sh
-fi
 
-log_message "=======**********    END INSTALLATION OF SPEEDOMETER    **********======="
-log_message " "
+  # a window will appear before the system reboots automatically
+  sleep 3
+  killall jci-dialog
+  /jci/tools/jci-dialog --info --title="MZD Speedometer Installed" --text="THE SYSTEM WILL REBOOT IN A FEW SECONDS!" --no-cancel &
+  sleep 10
+  killall jci-dialog
+  /jci/tools/jci-dialog --info --title="MZD Speedometer v.${AIO_VER}" --text="YOU CAN REMOVE THE USB DRIVE NOW\n\nENJOY!" --no-cancel &
+  reboot
+  killall jci-dialog
+}
+# END INSTALLATION FUNCTIONS
 
-# show_message "INSTALL SPEEDOMETER VARIANT"
-log_message "========************* INSTALL SPEEDOMETER VARIANT ... ***********========"
+## RUN INSTALLATION FUNCTIONS
+start_install
 
-# Copy modded speedo files
-cp -a ${MYDIR}/config/speedometer_mod/jci /
-log_message "===                  Speedometer Variant Installed                    ==="
+preinstall_ops
 
-chmod 755 /jci/fonts/Crysta.ttf
-chmod 755 /jci/fonts/CHN/Crysta.ttf
-chmod 755 /jci/fonts/JP/Crysta.ttf
+speedo_cleanup
+    
+speedo_install
 
-log_message "=======******** END INSTALLATION OF SPEEDOMETER VARIANT *********========"
-log_message " "
-
-# Speedometer v5.0
-# show_message "INSTALL DIGITAL BAR SPEEDOMETER VARIANT ..."
-log_message "=========********** INSTALL DIGITAL BAR SPEEDOMETER ************========="
-
-cp -a ${MYDIR}/config/speedometer_bar/jci /
-log_message "===                 Speedometer Bar Variant Installed                 ==="
-
-sed -i 's/var barSpeedometerMod = false;/var barSpeedometerMod = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
-log_message "===       Set flag for bar speedometer in speedometer-startup.js      ==="
-
-if [ -e ${MYDIR}/config/speedometer_bar/speedometer-config.js ]
-then
-  cp -a ${MYDIR}/config/speedometer_bar/speedometer-config.js /jci/gui/apps/_speedometer/js
-  log_message "===                  Copied Speedometer Config File                   ==="
-elif [ -e /tmp/root/speedometer-config.js ]
-then
-  cp -a /tmp/root/speedometer-config.js /jci/gui/apps/_speedometer/js
-  log_message "===               Reuse Previous Speedometer Config File              ==="
-else
-  log_message "===       NO 'speedometer-config.js' FILE FOUND... USING DEFAULT      ==="
-fi
-
-log_message "=========************ END DIGITAL BAR SPEEDOMETER **************========="
-log_message " "
-
-log_message " "
-sleep 2
-log_message "======================= END OF TWEAKS INSTALLATION ======================"
-show_message "========== END OF SPEEDOMETER INSTALLATION =========="
-if [ "${KEEPBKUPS}" = "1" ]
-then
-  json="$(cat ${MYDIR}/AIO_info.json)"
-  rownend=$(echo -n $json | tail -c 1)
-  if [ "$rownend" = "," ]
-  then
-    # if so, remove "," from back end
-    echo -n ${json%,*} > ${MYDIR}/AIO_info.json
-    sleep 2
-  fi
-  aio_info ']}'
-fi
-# a window will appear before the system reboots automatically
-sleep 3
-killall jci-dialog
-/jci/tools/jci-dialog --info --title="MZD Speedometer Installed" --text="THE SYSTEM WILL REBOOT IN A FEW SECONDS!" --no-cancel &
-sleep 10
-killall jci-dialog
-/jci/tools/jci-dialog --info --title="MZD Speedometer v.${AIO_VER}" --text="YOU CAN REMOVE THE USB DRIVE NOW\n\nENJOY!" --no-cancel &
-reboot
-killall jci-dialog
+end_install
 

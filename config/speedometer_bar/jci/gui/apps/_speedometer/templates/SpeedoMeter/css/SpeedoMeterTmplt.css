@@ -1,11 +1,11 @@
 #speedometerContainer {
-  right:0;
-  bottom:0;
-  left:0;
-  height:100%;
-  width:100%;
-  z-index:20001;
-  position:absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 20001;
+  position: absolute;
 }
 #speedometerMainDiv {
   width: 700px;
@@ -41,10 +41,10 @@ div.phile {
   position: absolute;
 }
 #speedometerContainer .vehDataLegends {
-  padding-left:1px;
-  padding-right:1px;
-  border-left:0px;
-  font-size:18px;
+  padding-left: 1px;
+  padding-right: 1px;
+  border-left: 0px;
+  font-size: 18px;
   margin: auto;
   overflow: hidden;
   max-width: 110px;
@@ -52,10 +52,10 @@ div.phile {
   text-align: center !important;
 }
 #speedometerContainer .vehDataMain .vehDataLegends {
-    max-width: 150px;
+  max-width: 150px;
 }
 #speedometerContainer #vehdataMainDiv fieldset {
-  position:fixed;
+  position: fixed;
   right: 0;
   width: 170px;
   height: 50px;
@@ -78,13 +78,13 @@ div.phile {
   font-style: normal;
   margin-top: 5px;
   font-size: 35px;
-  color:white;
-  transition: .8s ease-in-out .1s;
+  color: white;
+  transition: .8s ease-in .1s;
 }
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"] div  {
   margin-top: 2px;
   font-size: 35px;
-  transition: .8s ease-in-out .1s;
+  transition: .8s ease-out .1s;
 }
 #speedometerContainer .speedTopValue span {
   display: none;
@@ -105,7 +105,7 @@ div.phile {
 #speedometerContainer #vehdataMainDiv fieldset.activeDataBar {
   opacity: 1;
   margin-top: 0;
-  transition: .8s ease-in .3s;
+  transition: .8s ease-in .1s;
   bottom: 40px;
   margin-top: 0;
 }
@@ -125,7 +125,7 @@ div.phile {
   left: 610px;
   width: 150px;
   border-width: 2px 0 0 0;
-  transition: .8s ease-in .3s;
+  transition: .8s ease-in .1s;
 }
 /* Pos 1 */
 #speedometerContainer #vehdataMainDiv [class*="vehDataBar"].pos1 {
@@ -170,29 +170,27 @@ div.phile {
   font-size: 12px;
 }
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 {
+  border: 0px dashed transparent;
   left: 360px;
   bottom: 180px;
   position: fixed;
-  border: none;
 }
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div {
-  transform:translate(-50%, -50%);
+  transform: translate(-50%, -50%);
   position: fixed;
   font-family: "Crystal", Arial, Helvetica, sans-serif;
   font-weight: normal;
   color: white;
-  font-stretch: ultra-condensed;
   font-style: normal;
   text-align: center!important;
   font-size: 135px;
-  padding: 0 60px;
+  padding: 0 50px;
 }
 #speedometerContainer #vehdataMainDiv [id*=Gear].pos0,
 #speedometerContainer #vehdataMainDiv [id*=speed].pos0,
 #speedometerContainer #vehdataMainDiv [id*=gpsSpeed].pos0 {
   bottom: 200px;
 }
-
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=Gear],
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=speed],
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=vehicleSpeed],
@@ -201,7 +199,7 @@ div.phile {
 }
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class^=gpsL],
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div.gpsAltitudeMinMax {
-    font-size: 90px;
+  font-size: 90px;
 }
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 legend {
   visibility: hidden;
@@ -209,9 +207,9 @@ div.phile {
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 legend .fuelEffUnit,
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 legend .spunit span {
   width: 100px;
-  transform:translate(-50%, -50%);
-  position:fixed;
-  color:white;
+  transform: translate(-50%, -50%);
+  position: fixed;
+  color: white;
   font-size: 35px;
   text-align: center;
   white-space: nowrap;
@@ -221,7 +219,7 @@ div.phile {
   bottom: 140px;
 }
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 legend .fuelEffUnit{
-  left:560px;
+  left: 560px;
   font-size: 20px;
 }
 #speedometerContainer #vehdataMainDiv #gpsSpeedFieldSet[class*="vehDataMain"].pos0 legend .spunit span,
@@ -234,14 +232,23 @@ div.phile {
 #speedometerContainer #vehdataMainDiv fieldset.hidden  {
   display: none !important;
 }
-#speedometerContainer #vehdataMainDiv .swapOut {
-    background: linear-gradient(rgba(255, 255, 255, 0.22),rgba(11, 0, 255, 0.18));
-    border: 2px dashed;
+#speedometerContainer fieldset div {
+  border: none;
 }
-#speedometerContainer #vehdataMainDiv .pos0 .swapOut {
+#speedometerContainer .pos0 div {
   border-radius: 50px;
 }
-#speedometerContainer #speedbarMainDiv [class^="speedBar_"]{
+#speedometerContainer #vehdataMainDiv fieldset[class*="vehDataMain"].swapOut {
+  border-bottom:none;
+  border-right:none;
+  border-left:none;
+}
+#speedometerContainer #vehdataMainDiv .swapOut {
+  background: -webkit-linear-gradient(rgba(255, 255, 255, .25) 25%,rgba(0, 28, 107, .5));
+  background: linear-gradient(rgba(255, 255, 255, .25) 25%,rgba(0, 28, 107, .5));
+  border: 2px dashed threedface;
+}
+#speedometerContainer #speedbarMainDiv [class^=speedBar] {
   height: 6px;
   margin-top: 2px;
   border-top: 0px !important;

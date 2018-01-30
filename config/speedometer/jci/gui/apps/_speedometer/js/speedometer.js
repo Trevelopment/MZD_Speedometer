@@ -84,7 +84,7 @@ $(document).ready(function(){
   function updateIdleTime(speed){
     // update stop time
     // --------------------------------------------------------------------------
-    if(speed == 0 && totalTripSeconds > 35){
+    if(speed === 0 && totalTripSeconds > 35){
       totalIdleSeconds++;
       var hours   = Math.floor(totalIdleSeconds / 3600);
       var minutes = Math.floor((totalIdleSeconds - (hours * 3600)) / 60);
@@ -101,7 +101,7 @@ $(document).ready(function(){
 
     // update engine idle time
     // --------------------------------------------------------------------------
-    if(speed == 0 && engineSpeedCurrent > 0 && totalTripSeconds > 35){
+    if(speed === 0 && engineSpeedCurrent > 0 && totalTripSeconds > 35){
       totalEngineOnSeconds++;
       var hours   = Math.floor(totalEngineOnSeconds / 3600);
       var minutes = Math.floor((totalEngineOnSeconds - (hours * 3600)) / 60);
@@ -185,7 +185,7 @@ $(document).ready(function(){
           TotFuelEfficiency = (Math.round(10000 / totfuelEff)/10).toFixed(1);
         }
       }
-      if(language == 'DE' || language == 'FR'){
+      if(language === 'DE' || language === 'FR'){
         TotFuelEfficiency = TotFuelEfficiency.toString().replace(".",",");
       }
       // $('.TotFuelEfficiency').text(TotFuelEfficiency);
@@ -209,7 +209,7 @@ $(document).ready(function(){
           FuelEfficiency = (Math.round(10000 / currentfuelEff)/10).toFixed(1);
         }
       }
-      if(language == 'DE' || language == 'FR'){
+      if(language === 'DE' || language === 'FR'){
         FuelEfficiency = FuelEfficiency.toString().replace(".",",");
       }
       $('.Drv1AvlFuelEValue').html('<span>('+TotFuelEfficiency+')</span>'+FuelEfficiency);
@@ -237,7 +237,7 @@ $(document).ready(function(){
       } else {
         tripDist = (tripDistCurrent * 0.02).toFixed(2);
       }
-      if(language == 'DE' || language == 'FR'){
+      if(language === 'DE' || language === 'FR'){
         tripDist = tripDist.toString().replace(".",",");
       }
       $('.tripDistance').text(tripDist);
@@ -329,13 +329,13 @@ $(document).ready(function(){
             case 15:    direction = "NNW";  break;
             default:    direction = "N";
           }
-          if(language == 'DE'){
+          if(language === 'DE'){
             direction = direction.replace(/E/g, "O");
           }
-          if(language == 'FR'){
+          if(language === 'FR'){
             direction = direction.replace(/W/g, "O");
           }
-          if(language == 'TR'){
+          if(language === 'TR'){
             direction = direction.replace(/N/g, "K");
             direction = direction.replace(/S/g, "G");
             direction = direction.replace(/E/g, "D");
@@ -368,13 +368,13 @@ $(document).ready(function(){
           case 15:    direction = "SSE";  break;
           default:    direction = "S";
         }
-        if(language == 'DE'){
+        if(language === 'DE'){
           direction = direction.replace(/E/g, "O");
         }
-        if(language == 'FR'){
+        if(language === 'FR'){
           direction = direction.replace(/W/g, "O");
         }
-        if(language == 'TR'){
+        if(language === 'TR'){
           direction = direction.replace(/N/g, "K");
           direction = direction.replace(/S/g, "G");
           direction = direction.replace(/E/g, "D");
@@ -400,7 +400,7 @@ $(document).ready(function(){
       } else {
         $('.gpsLatitudeValue').html(Math.abs(GPSlatCurrent)+'&deg;').removeClass("lat_n").addClass("lat_s");
       }
-      if(language == 'TR'){
+      if(language === 'TR'){
         $('.gpsLatitudeValue').addClass("tr");
       }
     }
@@ -420,13 +420,13 @@ $(document).ready(function(){
       } else {
         $('.gpsLongitudeValue').html(Math.abs(GPSlonCurrent)+'&deg;').removeClass("lon_e").addClass("lon_w");
       }
-      if(language == 'DE'){
+      if(language === 'DE'){
         $('.gpsLongitudeValue').addClass("de");
       }
-      if(language == 'TR'){
+      if(language === 'TR'){
         $('.gpsLongitudeValue').addClass("tr");
       }
-      if(language == 'FR'){
+      if(language === 'FR'){
         $('.gpsLongitudeValue').addClass("fr");
       }
     }
@@ -460,7 +460,7 @@ $(document).ready(function(){
 
   setInterval(function (){
     updateTripTime();
-    if(speedCurrent == 0){
+    if(speedCurrent === 0){
       updateIdleTime(speedCurrent);
     }
     if ((enableSmallSbSpeedo) && (!$('#SbSpeedo').hasClass('parking'))) {

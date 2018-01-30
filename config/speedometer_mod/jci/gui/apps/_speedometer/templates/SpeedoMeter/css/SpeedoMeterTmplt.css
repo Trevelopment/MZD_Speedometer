@@ -1,13 +1,13 @@
 /* start */
 #speedometerContainer {
-  font-family:Tipperary,verdana;
-  top:0px;
-  right:0;
-  bottom:0;
-  left:0;
-  height:416px;
-  width:800px;
-  position:absolute;
+  font-family: Tipperary,verdana;
+  top: 0px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 416px;
+  width: 800px;
+  position: absolute;
   overflow: hidden;
 }
 #analog {
@@ -24,7 +24,7 @@
   width: 496px;
   height: 482px;
   background: url('../images/bg_analog.png') no-repeat scroll center top transparent;
-  position:absolute;
+  position: absolute;
   z-index: 100;
 }
 #speedometerDial {
@@ -34,7 +34,7 @@
   height: 241px;
   background: url('../images/Ticks_Style04_kmh.png') no-repeat scroll 0 0 transparent;
   background-size: 100% 93.7%;
-  position:absolute;
+  position: absolute;
   z-index: 101;
 }
 #speedometerDial.mph {
@@ -103,7 +103,7 @@
   font-size: 240px;
 }
 #digital .speedUnit {
-  font-family:Tipperary,verdana;
+  font-family: Tipperary,verdana;
   position: absolute;
   left: 370px;
   top: 220px;
@@ -277,7 +277,7 @@ fieldset div span {
   font-size: 16px;
   padding-right: 4px;
 }
-[id|=textSpeed] {
+[id^=textSpeed] {
   position: absolute;
   z-index: 101;
   color: #CCCCCC;

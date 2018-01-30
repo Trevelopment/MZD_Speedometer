@@ -64,7 +64,8 @@ function updateSpeedoApp(){
   // --------------------------------------------------------------------------
   var fuelToggler = (barSpeedometerMod) ? $('.spdBtn3') : $('#Drv1AvlFuelEFieldSet');
   fuelToggler.click(function(){
-    (isMPH) ? toggleTempUnit() : toggleFuelEffUnit();
+    //(isMPH) ? toggleTempUnit() : toggleFuelEffUnit();
+    speedAnimation = !speedAnimation;
   });
   // Toggle km/L - L/100km
   // --------------------------------------------------------------------------
@@ -454,9 +455,9 @@ function updateSpeedoApp(){
   $('.tripDistance').html(tripDist);
   $('.speedAvgValue').html(speedAvg);
   $('.gpsAltitudeValue').html(GPSaltCurrent);
-  $('.coolantTempValue').html(coolantTemp+"&deg;");
-  $('.intakeTempValue').html(intakeTemp+"&deg;");
-  $('.outsideTempValue').html(outsideTemp+"&deg;");
+  $('.coolantTempValue').html(coolantTemp);
+  $('.intakeTempValue').html(intakeTemp);
+  $('.outsideTempValue').html(outsideTemp);
   $('.gearPositionValue').html(lastGearPositionValue);
   $('.fuelGaugeValue').html(lastFuelGaugeValue+"%");
   $('.gearLeverPositionValue').html(lastGearLeverPositionValue);
@@ -478,6 +479,7 @@ function updateSpeedoApp(){
     $('[id*=FieldSet]').click(function(evt){
       if(swapOut){
         swapOut.removeClass("swapOut");
+        swapOut.children().removeClass("swapOut");
         var temp = $(this);
         var tempClass = temp.attr('class');
         var swapClass = swapOut.attr('class');
@@ -494,7 +496,7 @@ function updateSpeedoApp(){
         swapOut = null;
       } else {
         swapOut = $(this);
-        swapOut.addClass("swapOut");
+        swapOut.hasClass("pos0") ? swapOut.children('div').addClass("swapOut") : swapOut.addClass("swapOut");
       }
     });
   } else {

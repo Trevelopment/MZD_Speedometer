@@ -6,11 +6,11 @@ var enableSmallSbSpeedo = true;
 // isMPH is used for metric/US english conversion flag (C/F, KPH/MPH, Meter/Feet, L per 100km/MPG)
 // Set isMPH = true for MPH, Feet, MPG
 // Set isMPH = false for KPH, Meter
-var isMPH = false;
+var isMPH = true;
 
 // set the language for the speedometer
-// available EN, ES, DE, PL, SK, TR, FR
-var language = "DE";
+// available EN, ES, DE, PL, SK, TR, FR, IT
+var language = "EN";
 
 // set unit for fuel efficiency to km/L instead of L/100km
 var fuelEffunit_kml = false;
@@ -44,6 +44,9 @@ var engineSpeedBar = false;
 
 // set this to true for Fahrenheit false for Celsius
 var tempIsF = false;
+
+// set this to false to disable speed counter animation
+var speedAnimation = true;
 
 //// user config end ////
 

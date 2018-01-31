@@ -13,7 +13,8 @@ function updateSpeedoApp(){
       $('.vehDataBar' + currDataBar).addClass('activeDataBar');
     });
     $('.spdBtn2').click(function(){
-      engineSpeedBar = !engineSpeedBar;
+      $('[class^=speedBar]').toggle();
+      //engineSpeedBar = !engineSpeedBar;
     });
   } else {
     // touch to toggle Analog / Digital
@@ -64,8 +65,8 @@ function updateSpeedoApp(){
   // --------------------------------------------------------------------------
   var fuelToggler = (barSpeedometerMod) ? $('.spdBtn3') : $('#Drv1AvlFuelEFieldSet');
   fuelToggler.click(function(){
-    //(isMPH) ? toggleTempUnit() : toggleFuelEffUnit();
-    speedAnimation = !speedAnimation;
+    (isMPH) ? toggleTempUnit() : toggleFuelEffUnit();
+    //speedAnimation = !speedAnimation;
   });
   // Toggle km/L - L/100km
   // --------------------------------------------------------------------------

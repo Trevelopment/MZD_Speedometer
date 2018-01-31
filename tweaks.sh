@@ -121,7 +121,7 @@ show_message_OK()
   sleep 4
   killall jci-dialog
   #/jci/tools/jci-dialog --confirm --title="INSTALL SPEEDOMETER?" --text="$*" --ok-label="YES - GO ON" --cancel-label="NO - ABORT"
-  /jci/tools/jci-dialog --3-button-dialog --title="INSTALL SPEEDOMETER?" --text="$*" --ok-label="Install" --cancel-label="Configure" --button3-label="Uninstall"
+  /jci/tools/jci-dialog --3-button-dialog --title="INSTALL SPEEDOMETER?" --text="$*" --ok-label="Install" --cancel-label="Config" --button3-label="Uninstall"
   METHOD=$?
   killall jci-dialog
   if [ $METHOD -eq 0 ]
@@ -308,7 +308,7 @@ preinstall_ops()
       show_message "MZD Speedometer v.${AIO_VER}\nDetected compatible version ${CMU_SW_VER}\nContinuing Installation With Default Settings..."
       sleep 5
     else
-      show_message_OK "MZD Speedometer v.${AIO_VER}\nDetected compatible version ${CMU_SW_VER}\nContinue Installation With Default Settings\nTo Configure Settings Choose Config\nOr Choose To Uninstall"
+      show_message_OK "MZD Speedometer v.${AIO_VER}\nDetected compatible version ${CMU_SW_VER}\nContinue Installation With Default Settings?\nTo Configure Settings Choose Config\nOr Choose To Uninstall"
     fi
     log_message "=======        Detected compatible version ${CMU_SW_VER}          ======="
   else
@@ -325,7 +325,7 @@ preinstall_ops()
     exit 0
   fi
   # a window will appear for 4 seconds to show the beginning of installation
-  show_message "START SPEEDOMETER INSTALLATION\nMZD Speedometer v.${AIO_VER} By: Trezdog44 & Diginix\n(This and the following message popup windows\n DO NOT have to be confirmed with OK)\nLets Go!"
+  show_message "START SPEEDOMETER INSTALLATION\n\nMZD Speedometer v.${AIO_VER}"
   log_message " "
   log_message "======***********    BEGIN PRE-INSTALL OPERATIONS ...    **********======"
 
@@ -386,7 +386,7 @@ preinstall_ops()
     show_message "UNINSTALL SPEEDOMETER ..."
     log_message "==========************** UNINSTALLING SPEEDOMETER ************==========="
   else
-    show_message "INSTALL SPEEDOMETER v5.2 ..."
+    show_message "INSTALL SPEEDOMETER v5.2.1 ..."
     log_message "==========**************** INSTALL SPEEDOMETER *****************========="
   fi
   log_message " "
@@ -461,7 +461,7 @@ speedo_cleanup()
 choose_language()
 {
   killall jci-dialog
-  /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="STATUSBAR LANGUAGE?" --ok-label="English" --cancel-label="German" --button3-label="More"
+  /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="SPEEDOMETER LANGUAGE?" --ok-label="English" --cancel-label="German" --button3-label="More"
   CHOICE=$?
   killall jci-dialog
   if [ $CHOICE -eq 1 ]
@@ -470,7 +470,7 @@ choose_language()
     log_message "===              CHANGED SPEEDOMETER TO GERMAN VERSION               ==="
   elif [ $CHOICE -eq 2 ]
   then
-    /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="STATUSBAR LANGUAGE?" --ok-label="Spanish" --cancel-label="French" --button3-label="More"
+    /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="SPEEDOMETER LANGUAGE?" --ok-label="Spanish" --cancel-label="French" --button3-label="More"
     CHOICE=$?
     killall jci-dialog
     if [ $CHOICE -eq 0 ]
@@ -486,7 +486,7 @@ choose_language()
       sed -i 's/var language = "EN";/var language = "FR";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
       log_message "===              CHANGED SPEEDOMETER TO FRENCH VERSION                ==="
     else
-      /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="STATUSBAR LANGUAGE?" --ok-label="Polish" --cancel-label="Italian" --button3-label="More"
+      /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="SPEEDOMETER LANGUAGE?" --ok-label="Polish" --cancel-label="Italian" --button3-label="More"
       CHOICE=$?
       killall jci-dialog
       if [ $CHOICE -eq 0 ]
@@ -502,7 +502,7 @@ choose_language()
         sed -i 's/var language = "EN";/var language = "IT";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
         log_message "===               CHANGED SPEEDOMETER TO ITALIAN VERSION              ==="
       else
-        /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="STATUSBAR LANGUAGE?" --ok-label="Slovak" --cancel-label="Turkish" --button3-label="Back To 1st"
+        /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="SPEEDOMETER LANGUAGE?" --ok-label="Slovak" --cancel-label="Turkish" --button3-label="Back To 1st"
         CHOICE=$?
         killall jci-dialog
         if [ $CHOICE -eq 0 ]
@@ -679,14 +679,8 @@ speedo_install()
       fi
     fi    
     
-    show_message "INSTALLING SPEEDOMETER MODS ...."
+    show_message "INSTALLING MODS ...."
     
-    log_message "=======**********    END INSTALLATION OF SPEEDOMETER    **********======="
-    log_message " "
-
-    # show_message "INSTALL SPEEDOMETER VARIANT"
-    log_message "========************* INSTALL SPEEDOMETER VARIANT ... ***********========"
-
     # Copy modded speedo files
     cp -a ${MYDIR}/config/speedometer_mod/jci /
     log_message "===                  Speedometer Variant Installed                    ==="
@@ -694,13 +688,6 @@ speedo_install()
     chmod 755 /jci/fonts/Crysta.ttf
     chmod 755 /jci/fonts/CHN/Crysta.ttf
     chmod 755 /jci/fonts/JP/Crysta.ttf
-
-    log_message "=======******** END INSTALLATION OF SPEEDOMETER VARIANT *********========"
-    log_message " "
-
-    # Speedometer v5.0
-    # show_message "INSTALL DIGITAL BAR SPEEDOMETER VARIANT ..."
-    log_message "=========********** INSTALL DIGITAL BAR SPEEDOMETER ************========="
 
     cp -a ${MYDIR}/config/speedometer_bar/jci /
     log_message "===                 Speedometer Bar Variant Installed                 ==="

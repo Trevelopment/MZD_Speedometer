@@ -1,5 +1,5 @@
 #!/bin/sh
-# tweaks.sh - MZD Speedometer Version 5.2.1
+# tweaks.sh - MZD Speedometer Version 5.3
 # Configurable Installer
 # By Diginix, Trezdog44, & Many Others
 # For more information visit https://mazdatweaks.com
@@ -9,8 +9,8 @@
 hwclock --hctosys
 
 # AIO Variables
-AIO_VER=5.2.1
-AIO_DATE=2018.01.31
+AIO_VER=5.3
+AIO_DATE=2018.02.03
 
 # Set to 1 to skip confirmation (& use default settings)
 SKIPCONFIRM=0
@@ -259,7 +259,7 @@ start_install()
 
   log_message "========================================================================="
   log_message "=======================   START LOGGING TWEAKS...  ======================"
-  log_message "==================== SPEEDOMETER v.${AIO_VER}  -  ${AIO_DATE} =================="
+  log_message "==================== SPEEDOMETER v.${AIO_VER}  -  ${AIO_DATE} ==================="
   log_message "======================= CMU_SW_VER = ${CMU_SW_VER} ======================"
   log_message "=======================  COMPATIBILITY_GROUP  = ${COMPAT_GROUP} ======================="
   #log_message "======================== CMU_VER = ${CMU_VER} ====================="
@@ -668,15 +668,15 @@ speedo_install()
         log_message "===              DISABLE SMALL SPEEDOMETER IN STATUSBAR               ==="
       fi
       
-      /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="SPEED COUNTER ANIMATION?" --ok-label="ENABLE" --cancel-label="DISABLE"
-      CHOICE=$?
-      killall jci-dialog
-      if [ $CHOICE -eq 1 ]
-      then
-        # Disable counter animation
-        sed -i 's/var speedAnimation = true;/var speedAnimation = false;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
-        log_message "===                 DISABLE SPEED COUNTER ANIMATION                   ==="
-      fi
+      #/jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="SPEED COUNTER ANIMATION?" --ok-label="ENABLE" --cancel-label="DISABLE"
+      #CHOICE=$?
+      #killall jci-dialog
+      #if [ $CHOICE -eq 0 ]
+      #then
+        # Enable counter animation
+      #  sed -i 's/var speedAnimation = false;/var speedAnimation = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+      #  log_message "===                 DISABLE SPEED COUNTER ANIMATION                   ==="
+      #fi
     fi    
     
     show_message "INSTALLING MODS ...."
@@ -695,9 +695,9 @@ speedo_install()
     sed -i 's/var barSpeedometerMod = false;/var barSpeedometerMod = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
     log_message "===       Set flag for bar speedometer in speedometer-startup.js      ==="
 
-    if [ -e ${MYDIR}/config/speedometer_bar/speedometer-config.js ]
+    if [ -e ${MYDIR}/config/speedometer-config.js ]
     then
-      cp -a ${MYDIR}/config/speedometer_bar/speedometer-config.js /jci/gui/apps/_speedometer/js
+      cp -a ${MYDIR}/config/speedometer-config.js /jci/gui/apps/_speedometer/js
       log_message "===                  Copied Speedometer Config File                   ==="
     elif [ -e /tmp/root/speedometer-config.js ]
     then

@@ -123,7 +123,7 @@ $(document).ready(function(){
       if(hours > 0 && minutes < 10){minutes = "0"+minutes;}
       if(seconds < 10){seconds = "0"+seconds;}
       if(hours > 0){
-        idleTimeValue = (hours+':'+minutes+':'+seconds);
+        idleTimeValue = ('<span class="idleHours">'+hours+':'+minutes+':'+seconds+'</span>');
       } else {
         idleTimeValue = (minutes+':'+seconds);
       }
@@ -140,7 +140,7 @@ $(document).ready(function(){
       if(hoursE > 0 && minutesE < 10){minutesE = "0"+minutesE;}
       if(secondsE < 10){secondsE = "0"+secondsE;}
       if(hoursE > 0){
-        engONidleTimeValue = (hoursE+':'+minutesE+':'+secondsE);
+        engONidleTimeValue = ('<span class="idleHours">'+hoursE+':'+minutesE+':'+secondsE+'</span>');
       } else {
         engONidleTimeValue = (minutesE+':'+secondsE);
       }
@@ -593,7 +593,7 @@ $(document).ready(function(){
   // --------------------------------------------------------------------------
   function updateOutsideTemp(outTemp) {
     outTemp = $.trim(outTemp);
-    if ($.isNumeric(outTemp) && outTemp !== 0) {
+    if ($.isNumeric(outTemp) && outTemp !== "0") {
       outsideTemp = outTemp -= 40;
       if(tempIsF) {
         outTemp = outTemp * 1.8 + 32;
@@ -611,7 +611,7 @@ $(document).ready(function(){
   // --------------------------------------------------------------------------
   function updateIntakeTemp(inTemp) {
     inTemp = $.trim(inTemp);
-    if ($.isNumeric(inTemp) && inTemp !== 0) {
+    if ($.isNumeric(inTemp) && inTemp !== "0") {
       intakeTemp = inTemp -= 40;
       if(tempIsF) {
         inTemp = inTemp * 1.8 + 32;
@@ -629,7 +629,7 @@ $(document).ready(function(){
   // --------------------------------------------------------------------------
   function updateCoolantTemp(coolTemp) {
     coolTemp = $.trim(coolTemp);
-    if ($.isNumeric(coolTemp) && coolTemp !== 0) {
+    if ($.isNumeric(coolTemp) && coolTemp !== "0") {
       coolantTemp = coolTemp -= 40;
       if(tempIsF) {
         coolTemp = coolTemp * 1.8 + 32;
@@ -657,7 +657,7 @@ $(document).ready(function(){
   function updateGearLeverPos(gearLeverPos) {
     gearLeverPos = $.trim(gearLeverPos);
     if ($.isNumeric(gearLeverPos) && gearLeverPos !== lastGearLeverPositionValue) {
-      automaticTrans = (gearLeverPos !== 0);
+      automaticTrans = (gearLeverPos !== "0");
       lastGearLeverPositionValue =  (automaticTrans) ? gearLeverPos : "---";
       $('.gearLeverPositionValue').html(lastGearLeverPositionValue);
     }
@@ -669,7 +669,7 @@ $(document).ready(function(){
   function updateFuelGauge(fuelGaugeVal) {
     fuelGaugeVal = $.trim(fuelGaugeVal);
     if ($.isNumeric(fuelGaugeVal)) {
-      lastFuelGaugeValue = Math.round((fuelGaugeVal/184)*100);
+      lastFuelGaugeValue = Math.round((fuelGaugeVal/191)*100);
       $('.fuelGaugeValue').html(lastFuelGaugeValue+"%");
     }
   }
@@ -678,13 +678,19 @@ $(document).ready(function(){
   // Update Battery Charge
   // --------------------------------------------------------------------------
   function updateBatSOC(currBatSOC) {
-    currBatSOC = $.trim(currBatSOC);
-    if ($.isNumeric(currBatSOC)) {
-      BatSOC = ((currBatSOC / BatSOCmax * 100).toFixed(1)).toString();
-      if(language === 'DE' || language === 'FR'){
-        BatSOC = BatSOC.replace(".",",");
+    if(currBatSOC === '255') {
+      $('.batSOCValue').html("---");
+    } else if(currBatSOC === '254') {
+      $('.batSOCValue').html('<span class="istoperr">iStop ERR</span>');
+    } else {
+      currBatSOC = $.trim(currBatSOC);
+      if ($.isNumeric(currBatSOC)) {
+        BatSOC = ((currBatSOC / BatSOCmax * 100).toFixed(1)).toString();
+        if(language === 'DE' || language === 'FR'){
+          BatSOC = BatSOC.replace(".",",");
+        }
+        $('.batSOCValue').html(BatSOC);
       }
-      $('.batSOCValue').html(BatSOC);
     }
   }
   // --------------------------------------------------------------------------

@@ -72,7 +72,7 @@ div.phile {
 #speedometerContainer #vehdataMainDiv fieldset div {
   font-family: "Crystal", Arial, Helvetica, sans-serif;
   text-transform: uppercase;
-  font-stretch: condensed;
+  /*font-stretch: condensed;*/
   vertical-align: middle;
   font-weight: normal;
   font-style: normal;
@@ -89,9 +89,20 @@ div.phile {
 #speedometerContainer .speedTopValue span {
   display: none;
 }
-#speedometerContainer .idleTimeValue span,
-#speedometerContainer .Drv1AvlFuelEValue span,
-#speedometerContainer span.idlePercent {
+#speedometerContainer #vehdataMainDiv fieldset div.batSOCValue .istoperr {
+    font-size: 22px;
+}
+#speedometerContainer #vehdataMainDiv fieldset div[class*=idleTimeValue] {
+  font-size: 30px;
+}
+#speedometerContainer #vehdataMainDiv fieldset span.idlePercent {
+  padding-right: 2px;
+  font-size: 12px;
+}
+#speedometerContainer #vehdataMainDiv fieldset div .idleHours {
+  font-size: 22px;
+}
+#speedometerContainer .Drv1AvlFuelEValue span {
   padding-right: 6px;
   font-size: 12px;
 }
@@ -170,7 +181,7 @@ div.phile {
   font-size: 12px;
 }
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 {
-  border: 0px dashed transparent;
+  border: 2px dashed transparent;
   left: 360px;
   bottom: 180px;
   position: fixed;
@@ -186,16 +197,19 @@ div.phile {
   font-size: 135px;
   padding: 0 50px;
 }
-#speedometerContainer #vehdataMainDiv [id*=Gear].pos0,
+#speedometerContainer #vehdataMainDiv [id*=gear].pos0,
 #speedometerContainer #vehdataMainDiv [id*=speed].pos0,
 #speedometerContainer #vehdataMainDiv [id*=gpsSpeed].pos0 {
   bottom: 200px;
 }
-#speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=Gear],
+#speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=gear],
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=speed],
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=vehicleSpeed],
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=gpsSpeed] {
   font-size: 225px;
+}
+#speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=idleTimeValue] {
+  font-size: 110px;
 }
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class^=gpsL],
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div.gpsAltitudeMinMax {
@@ -217,6 +231,15 @@ div.phile {
   opacity: 1;
   left: 550px;
   bottom: 140px;
+}
+#speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 span.idlePercent {
+  position: fixed;
+  font-size: 24px;
+  transform: translate(-50%, -50%);
+  right: -60px;
+  bottom: 10px;
+  text-align: center;
+  white-space: nowrap;
 }
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 legend .fuelEffUnit{
   left: 560px;
@@ -245,7 +268,7 @@ div.phile {
 }
 #speedometerContainer #vehdataMainDiv .swapOut {
   background: -webkit-linear-gradient(rgba(255, 255, 255, .25) 25%,rgba(0, 28, 107, .5));
-  background: linear-gradient(rgba(255, 255, 255, .25) 25%,rgba(0, 28, 107, .5));
+  /*background: linear-gradient(rgba(255, 255, 255, .25) 25%,rgba(0, 28, 107, .5));*/
   border: 2px dashed threedface;
 }
 #speedometerContainer #speedbarMainDiv [class^=speedBar] {

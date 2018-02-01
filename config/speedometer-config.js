@@ -37,10 +37,10 @@ var spdTbl = {
   engTop:     [1, 3, 3], //Engine Top Speed
   avgFuel:    [1, 3, 4], //Average Fuel Economy
   coolTemp:   [1, 3, 5], //Coolant Temperature
-  engLoad:    [1, 4, 1], //Engine Load
+  engLoad:    [1, 4, 0], //Engine Load
   gpsLat:     [1, 4, 2], //GPS Latitude
   gpsLon:     [1, 4, 3], //GPS Longitude
   totFuel:    [1, 4, 4], //Total Fuel Economy
   trpEngIdle: [1, 4, 5], //Engine Idle Time
-  batSOC:     [1, 1, 0], //Battery Charge State (i-stop)
+  batSOC:     [1, 4, 1], //Battery Charge State (i-stop)
 };

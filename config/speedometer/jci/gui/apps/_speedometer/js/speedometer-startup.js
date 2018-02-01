@@ -45,8 +45,9 @@ var engineSpeedBar = false;
 // set this to true for Fahrenheit false for Celsius
 var tempIsF = false;
 
-// set this to false to disable speed counter animation
-var speedAnimation = true;
+// set this to true to enable counter animation on the speed number
+// false to disable speed counter animation
+var speedAnimation = false;
 
 //// user config end ////
 

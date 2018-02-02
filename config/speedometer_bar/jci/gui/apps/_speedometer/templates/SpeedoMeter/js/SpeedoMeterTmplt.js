@@ -9,6 +9,7 @@
 log.addSrcFile("SpeedoMeterTmplt.js", "speedometer");
 
 //$.getScript("apps/_speedometer/js/speedometer-config.js");
+var speedometerLonghold = false;
 /*
  * =========================
  * Constructor
@@ -34,6 +35,7 @@ function SpeedoMeterTmplt(uiaId, parentDiv, templateID, controlProperties)
     };
     //@formatter:on
 
+    this.longholdTimeout = null;
     // create the div for template
     this.divElt = document.createElement('div');
     this.divElt.id = templateID;
@@ -244,29 +246,38 @@ $.getScript('apps/_speedometer/js/speedometerUpdate.js', setTimeout(function() {
 
      switch(eventID) {
        case "select":
-       $('.spdBtn0').click();
- 		   retValue = "consumed";
- 		break;
-       case "down":
-       $('.spdBtn2').click();
- 		   retValue = "consumed";
- 		break;
+         $('.spdBtn0').click();
+         retValue = "consumed";
+         break;
        case "up":
- 		   $('.spdBtn1').click();
- 		   retValue = "consumed";
- 		break;
-      case "right":
-      $('.spdBtn3').click();
-      retValue = "consumed";
-    break;
+         $('.spdBtn1').click();
+         retValue = "consumed";
+         break;
+       case "downStart":
+        this.longholdTimeout = setTimeout(function(){
+           speedometerLonghold = true;
+           $('[class^=speedBar]').toggle();
+         }, 2000);
+         retValue = "consumed";
+         break;
+       case "down":
+         (speedometerLonghold) ? speedometerLonghold = false : $('.spdBtn2').click();
+         clearTimeout(this.longholdTimeout);
+         this.longholdTimeout = null;
+         retValue = "consumed";
+         break;
+       case "right":
+         $('.spdBtn3').click();
+         retValue = "consumed";
+         break;
        case "left":
- 		   $('.spdBtn4').click();
- 		   retValue = "consumed";
- 		break;
-     //  case "cw":
-     //  case "ccw":
+         $('.spdBtn4').click();
+         retValue = "consumed";
+         break;
+       //  case "cw":
+       //  case "ccw":
        default:
- 		   retValue = "ignored";
+        retValue = "ignored";
  	}
 
      return retValue;

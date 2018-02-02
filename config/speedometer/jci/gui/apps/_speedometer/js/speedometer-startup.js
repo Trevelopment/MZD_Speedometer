@@ -36,11 +36,15 @@ var sbTemp = false;
 
 // flag for bar SpeedoMeter
 // Set This to true if using the Bar Speedometer Mod
-var barSpeedometerMod = false;
+var barSpeedometerMod = true;
 
-// Set This to true if you want the Bar in the Bar Speedometer to measure engine speed
-// False for Current Vehicle Speed
+// Default false for Current Vehicle Speed
+// Set This to true if you want the Colored Bar to measure engine speed
 var engineSpeedBar = false;
+
+// Hide the Bar default false
+// Set This to true to hide the Colored Bar
+var hideSpeedBar = false;
 
 // set this to true for Fahrenheit false for Celsius
 var tempIsF = false;

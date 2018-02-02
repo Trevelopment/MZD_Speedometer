@@ -80,6 +80,7 @@ div.phile {
   font-size: 35px;
   color: white;
   transition: .8s ease-in .1s;
+  border: 2px dashed transparent;
 }
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"] div  {
   margin-top: 2px;
@@ -92,7 +93,7 @@ div.phile {
 #speedometerContainer #vehdataMainDiv fieldset div.batSOCValue .istoperr {
     font-size: 22px;
 }
-#speedometerContainer #vehdataMainDiv fieldset div[class*=idleTimeValue] {
+#speedometerContainer #vehdataMainDiv fieldset div[class*=dleTimeValue] {
   font-size: 30px;
 }
 #speedometerContainer #vehdataMainDiv fieldset span.idlePercent {
@@ -196,6 +197,7 @@ div.phile {
   text-align: center!important;
   font-size: 135px;
   padding: 0 50px;
+  border: 2px dashed transparent;
 }
 #speedometerContainer #vehdataMainDiv [id*=gear].pos0,
 #speedometerContainer #vehdataMainDiv [id*=speed].pos0,
@@ -208,8 +210,8 @@ div.phile {
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=gpsSpeed] {
   font-size: 225px;
 }
-#speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=idleTimeValue] {
-  font-size: 110px;
+#speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class$=dleTimeValue] {
+  font-size: 120px;
 }
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class^=gpsL],
 #speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div.gpsAltitudeMinMax {
@@ -266,9 +268,9 @@ div.phile {
   border-right:none;
   border-left:none;
 }
-#speedometerContainer #vehdataMainDiv .swapOut {
+#speedometerContainer #vehdataMainDiv .swapOut,
+#speedometerContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div.swapOut {
   background: -webkit-linear-gradient(rgba(255, 255, 255, .25) 25%,rgba(0, 28, 107, .5));
-  /*background: linear-gradient(rgba(255, 255, 255, .25) 25%,rgba(0, 28, 107, .5));*/
   border: 2px dashed threedface;
 }
 #speedometerContainer #speedbarMainDiv [class^=speedBar] {

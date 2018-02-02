@@ -13,9 +13,11 @@ function updateSpeedoApp(){
       $('.vehDataBar' + currDataBar).addClass('activeDataBar');
     });
     $('.spdBtn2').click(function(){
-      $('[class^=speedBar]').toggle();
-      //engineSpeedBar = !engineSpeedBar;
+      engineSpeedBar = !engineSpeedBar;
     });
+    if (hideSpeedBar) {
+      $('[class^=speedBar]').toggle();
+    }
   } else {
     // touch to toggle Analog / Digital
     // --------------------------------------------------------------------------

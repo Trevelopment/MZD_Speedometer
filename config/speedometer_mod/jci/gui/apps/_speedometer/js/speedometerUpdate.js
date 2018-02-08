@@ -14,6 +14,7 @@ function updateSpeedoApp(){
     });
     $('.spdBtn2').click(function(){
       engineSpeedBar = !engineSpeedBar;
+      speedoSBN("Speed Bar: " + (engineSpeedBar ? $('#engineSpeedFieldSet legend').text() : $('#speedCurrentFieldSet legend').text()));
     });
     if (hideSpeedBar) {
       $('[class^=speedBar]').toggle();
@@ -74,22 +75,25 @@ function updateSpeedoApp(){
   // --------------------------------------------------------------------------
   function  toggleFuelEffUnit() {
     fuelEffunit_kml = !fuelEffunit_kml;
-    $('legend .fuelEffUnit').html((fuelEffunit_kml) ? 'km/L &empty;' : 'L/100 km &empty;');
+    var effUnit = (fuelEffunit_kml ? 'km/L ∅' : 'L/100 km ∅');
+    speedoSBN("Fuel Eff Unit: " + effUnit);
+    $('legend .fuelEffUnit').html(effUnit);
   }
   // Toggle Temperature (C & F)
   // --------------------------------------------------------------------------
   function toggleTempUnit(){
     tempIsF = !tempIsF;
+    speedoSBN("Temperature Unit: " + (tempIsF ? "°F" : "°C"));
     if(tempIsF) {
       $('.tempUnit').html('F');
-      $('.intakeTempValue').html(C_2_F(intakeTemp)+'&deg;');
-      $('.coolantTempValue').html(C_2_F(coolantTemp)+'&deg;');
-      $('.outsideTempValue').html(C_2_F(outsideTemp)+'&deg;');
+      //$('.intakeTempValue').html(C_2_F(intakeTemp)+'&deg;');
+      //$('.coolantTempValue').html(C_2_F(coolantTemp)+'&deg;');
+      //$('.outsideTempValue').html(C_2_F(outsideTemp)+'&deg;');
     } else {
       $('.tempUnit').html('C');
-      $('.intakeTempValue').html(F_2_C(intakeTemp)+'&deg;');
-      $('.coolantTempValue').html(F_2_C(coolantTemp)+'&deg;');
-      $('.outsideTempValue').html(F_2_C(outsideTemp)+'&deg;');
+      //$('.intakeTempValue').html(F_2_C(intakeTemp)+'&deg;');
+      //$('.coolantTempValue').html(F_2_C(coolantTemp)+'&deg;');
+      //$('.outsideTempValue').html(F_2_C(outsideTemp)+'&deg;');
     }
   }
   /** Fahrenheit to Celsius ** T(°C) = (T(°F) - 32) / 1.8 **/
@@ -106,6 +110,7 @@ function updateSpeedoApp(){
   typeToggler.click(ToggleSpeedoType);
 
   function ToggleSpeedoType() {
+    speedoSBN("Speed Unit: " + (isMPH ? "KM/H" : "MPH"));
     if(isMPH){
       isMPH = false;
       speedSumTotal = Math.round(speedSumTotal * 1.609344);
@@ -186,9 +191,11 @@ function updateSpeedoApp(){
 
   function toggleSpeedometerBackground() {
     if ($('#speedometerContainer').css('background-image').indexOf('speedometer_background') !== -1) {
+      speedoSBN("Hide Speedometer Background");
       $('#speedometerContainer').css("background-image","");
     } else {
       $('#speedometerContainer').css("background-image","url(apps/_speedometer/templates/SpeedoMeter/images/speedometer_background.jpg)");
+      speedoSBN("Show Speedometer Background");
     }
   }
   // *********************************************************************************************************************
@@ -489,12 +496,7 @@ function updateSpeedoApp(){
         swapOut.removeClass(swapClass).addClass(tempClass);
         temp.removeClass(tempClass).addClass(swapClass);
         if(temp.hasClass('pos0') || swapOut.hasClass('pos0')) {
-          framework.common.startTimedSbn(this.uiaId, "MZDSpeedoSBN", "typeE",
-          {
-            sbnStyle : "Style02",
-            imagePath1 : 'apps/_speedometer/IcnSbnSpeedometer.png',
-            text1 : (temp.hasClass('pos0')) ? temp.children('legend').text() : swapOut.children('legend').text()
-          });
+          speedoSBN((temp.hasClass('pos0')) ? temp.children('legend').text() : swapOut.children('legend').text());
         }
         swapOut = null;
       } else {

@@ -167,8 +167,7 @@ function SpeedoMeterTmplt(uiaId, parentDiv, templateID, controlProperties)
 '<div id="digital">'+
 	'<div class="vehicleSpeed">0</div>'+
 	'<div class="speedUnit">---</div>'+
-'</div>'+
-'<!-- script language="javascript" type="text/javascript">setTimeout(function() {updateSpeedoApp();}, 700);</script -->';
+'</div>';
 $.getScript('apps/_speedometer/js/speedometerUpdate.js', setTimeout(function() {updateSpeedoApp();}, 700));
 }
 

@@ -110,12 +110,12 @@ function SpeedoMeterTmplt(uiaId, parentDiv, templateID, controlProperties)
 '			</fieldset>' +
 '			<fieldset id="engineSpeedFieldSet" class="' +
 ((spdTbl.engSpeed[0]===0) ? "vehDataMain" : "vehDataBar" + spdTbl.engSpeed[1]) + " pos" + spdTbl.engSpeed[2] +'">' +
-'				<legend class="vehDataLegends">Engine Speed</legend>' +
+'				<legend class="vehDataLegends">Engine RPM</legend>' +
 '				<div class="engineSpeedValue">0</div>' +
 '			</fieldset>' +
 '     <fieldset id="tripTimeFieldSet" class="'+
 ((spdTbl.trpTime[0]===0) ? "vehDataMain" : "vehDataBar" + spdTbl.trpTime[1]) + " pos" + spdTbl.trpTime[2] +'">' +
-'       <legend class="vehDataLegends">Drive Time</legend>'+
+'       <legend class="vehDataLegends">Trip Time</legend>'+
 '       <div class="tripTimeValue">0:00</div>'+
 '     </fieldset>'+
 '     <fieldset id="tripDistFieldSet" class="'+
@@ -205,7 +205,7 @@ function SpeedoMeterTmplt(uiaId, parentDiv, templateID, controlProperties)
 '     </fieldset>'+
 '     <fieldset id="engineSpeedTopFieldSet" class="'+
 ((spdTbl.engTop[0]===0) ? "vehDataMain" : "vehDataBar" + spdTbl.engTop[1]) + " pos" + spdTbl.engTop[2] +'">' +
-'       <legend class="vehDataLegends">Eng Top Speed</legend>'+
+'       <legend class="vehDataLegends">Max RPM</legend>'+
 '       <div class="engineSpeedTopValue">0</div>'+
 '     </fieldset>'+
 '     <fieldset id="batSOCFieldSet" class="'+
@@ -222,8 +222,7 @@ function SpeedoMeterTmplt(uiaId, parentDiv, templateID, controlProperties)
 '		</div>' +
 '	' +
 '	</div>' +
-'</div>' +
-'<!-- script language="javascript" type="text/javascript">setTimeout(function() {updateSpeedoApp();}, 700);</script -->';
+'</div>';
 $.getScript('apps/_speedometer/js/speedometerUpdate.js', setTimeout(function() {updateSpeedoApp();}, 700));
 }
 
@@ -257,6 +256,7 @@ $.getScript('apps/_speedometer/js/speedometerUpdate.js', setTimeout(function() {
         this.longholdTimeout = setTimeout(function(){
            speedometerLonghold = true;
            $('[class^=speedBar]').toggle();
+           speedoSBN(($('.speedBar_5').css('display').indexOf('none') !== -1 ? "Hide" : "Show") + " Speed Bar");
          }, 2000);
          retValue = "consumed";
          break;

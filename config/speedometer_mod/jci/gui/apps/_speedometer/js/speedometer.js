@@ -36,7 +36,8 @@ var lastGPSspeedValue = 0;
 var lastEnginespeedValue = 0;
 var lastGearPositionValue = 0;
 var lastGearLeverPositionValue = 1;
-var lastFuelGaugeValue = 0
+var fuelGaugeMax = 184;
+var lastFuelGaugeValue = 0;
 var lastAvgFuelValue = 0;
 var BatSOC = 0;
 var BatSOCmax = 200;
@@ -46,6 +47,7 @@ var currDataBar = 1;
 var backgroundColor = '';
 var automaticTrans = true;
 var engineSpeedBar = false;
+var spdIsConnected = false;
 
 $.ajax({
   url: 'addon-common/cufon-yui.js',
@@ -78,6 +80,10 @@ $(document).ready(function(){
     };
     speedometerWs.onopen = function(){
       speedometerWs.send(action);
+      spdIsConnected = true;
+    };
+    speedometerWs.onerror = function(e){
+      spdIsConnected = false;
     };
   }
   // --------------------------------------------------------------------------
@@ -669,7 +675,11 @@ $(document).ready(function(){
   function updateFuelGauge(fuelGaugeVal) {
     fuelGaugeVal = $.trim(fuelGaugeVal);
     if ($.isNumeric(fuelGaugeVal)) {
-      lastFuelGaugeValue = Math.round((fuelGaugeVal/191)*100);
+      lastFuelGaugeValue = Math.round((fuelGaugeVal/fuelGaugeMax)*100);
+      if(lastFuelGaugeValue > 100) {
+        fuelGaugeMax = Math.round(fuelGaugeVal);
+        lastFuelGaugeValue = 100;
+      }
       $('.fuelGaugeValue').html(lastFuelGaugeValue+"%");
     }
   }
@@ -802,9 +812,26 @@ $(document).ready(function(){
       }
     }
   }
-  // Start data retrieval
-  setTimeout(function(){
+  // Start data retrieval try to open websocket connection
+  // every 5 seconds but only 10 attempts thats almost a minute
+  var connectAttmpts = 0;
+  var spdConnect = setInterval(function() {
+    if(!spdIsConnected && connectAttmpts < 10) {
     retrievedata('vehicleData');
     retrievedata('envData');
-  }, 10000);
+      connectAttmpts++;
+    } else {
+      clearInterval(spdConnect);
+      spdConnect = null;
+    }
+  }, 5000);
 });
+
+function speedoSBN(message) {
+  framework.common.startTimedSbn(this.uiaId, "MZDSpeedoSBN", "typeE",
+  {
+    sbnStyle : "Style02",
+    imagePath1 : 'apps/_speedometer/IcnSbnSpeedometer.png',
+    text1 : message
+  });
+}

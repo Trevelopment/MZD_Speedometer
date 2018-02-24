@@ -1,5 +1,5 @@
 #!/bin/sh
-# tweaks.sh - MZD Speedometer Version 5.3
+# tweaks.sh - MZD Speedometer Version 5.5
 # Configurable Installer
 # By Diginix, Trezdog44, & Many Others
 # For more information visit https://mazdatweaks.com
@@ -9,8 +9,8 @@
 hwclock --hctosys
 
 # AIO Variables
-AIO_VER=5.3
-AIO_DATE=2018.02.03
+AIO_VER=5.5
+AIO_DATE=2018.02.28
 
 # Set to 1 to skip confirmation (& use default settings)
 SKIPCONFIRM=0
@@ -648,8 +648,29 @@ speedo_install()
         # Digital Clock Mod
         sed -i '/Remove this/d' /jci/gui/apps/_speedometer/css/StatusBarSpeedometer.css
         log_message "===                     APPLY DIGITAL CLOCK MOD                       ==="
+      fi      
+      
+      /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="START SPEEDOMETER?" --ok-label="BAR" --cancel-label="CLASSIC"
+      CHOICE=$?
+      killall jci-dialog
+      if [ $CHOICE -eq 0 ]
+      then
+        # Bar Speedo Mod
+        sed -i 's/var barSpeedometerMod = false;/var barSpeedometerMod = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js 
+        log_message "===       Set flag for bar speedometer in speedometer-startup.js      ==="
       fi
       
+      /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="MODDED SPEEDOMETER?" --ok-label="ANALOG" --cancel-label="DIGITAL"
+      CHOICE=$?
+      killall jci-dialog
+      if [ $CHOICE -eq 0 ]
+      then
+        # Speedo Variant
+        sed -i 's/var startAnalog = false;/var startAnalog = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        log_message "===               START MODED SPEEDOMETER IN ANALOG MODE              ==="
+      fi
+      
+      killall jci-dialog
       /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="STATUSBAR SPEEDOMETER?" --ok-label="Car Speed" --cancel-label="GPS Speed" --button3-label="None"
       CHOICE=$?
       killall jci-dialog
@@ -680,20 +701,6 @@ speedo_install()
     fi    
     
     show_message "INSTALLING MODS ...."
-    
-    # Copy modded speedo files
-    cp -a ${MYDIR}/config/speedometer_mod/jci /
-    log_message "===                  Speedometer Variant Installed                    ==="
-
-    chmod 755 /jci/fonts/Crysta.ttf
-    chmod 755 /jci/fonts/CHN/Crysta.ttf
-    chmod 755 /jci/fonts/JP/Crysta.ttf
-
-    cp -a ${MYDIR}/config/speedometer_bar/jci /
-    log_message "===                 Speedometer Bar Variant Installed                 ==="
-
-    sed -i 's/var barSpeedometerMod = false;/var barSpeedometerMod = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
-    log_message "===       Set flag for bar speedometer in speedometer-startup.js      ==="
 
     if [ -e ${MYDIR}/config/speedometer-config.js ]
     then
@@ -707,8 +714,6 @@ speedo_install()
       log_message "===       NO 'speedometer-config.js' FILE FOUND... USING DEFAULT      ==="
     fi
     chmod -R 755 /jci/gui/apps/_speedometer/
-    log_message "=========************ END DIGITAL BAR SPEEDOMETER **************========="
-    log_message " "
 
     log_message " "
     sleep 2

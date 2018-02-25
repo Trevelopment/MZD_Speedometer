@@ -1,8 +1,8 @@
 // See speedometer-config.js for user config
 
 var enableSmallSbSpeedo = true;
-var isMPH = false;
-var language = "DE";
+var isMPH = true;
+var language = "EN";
 var fuelEffunit_kml = false;
 var noNavSD = false;
 var black_background_opacity = 0.0;
@@ -10,7 +10,7 @@ var original_background_image = false;
 var startAnalog = false;
 var sbTemp = false;
 var barSpeedometerMod = false;
-var speedMod = false;
+var speedMod = true;
 var engineSpeedBar = false;
 var hideSpeedBar = false;
 var tempIsF = false;

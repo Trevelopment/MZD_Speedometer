@@ -380,13 +380,13 @@ preinstall_ops()
   fi
   log_message "=========************ END PRE-INSTALL OPERATIONS ***************========="
   log_message " "
-  
+
   if [ $UNINSTALL -eq 1 ]
   then
     show_message "UNINSTALL SPEEDOMETER ..."
     log_message "==========************** UNINSTALLING SPEEDOMETER ************==========="
   else
-    show_message "INSTALL SPEEDOMETER v5.2.1 ..."
+    show_message "INSTALL SPEEDOMETER v${AIO_VER} ..."
     log_message "==========**************** INSTALL SPEEDOMETER *****************========="
   fi
   log_message " "
@@ -405,8 +405,8 @@ preinstall_ops()
   fi
 }
 
-# Clean up speedometer files - This always runs before 
-# speedo_install to uninstall old versions 
+# Clean up speedometer files - This always runs before
+# speedo_install to uninstall old versions
 speedo_cleanup()
 {
   rm -fr /jci/gui/addon-player
@@ -607,7 +607,7 @@ speedo_install()
     then
       choose_language
       killall jci-dialog
-      
+
       /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="SPEED UNIT?" --ok-label="KM/H" --cancel-label="MPH"
       CHOICE=$?
       killall jci-dialog
@@ -648,18 +648,18 @@ speedo_install()
         # Digital Clock Mod
         sed -i '/Remove this/d' /jci/gui/apps/_speedometer/css/StatusBarSpeedometer.css
         log_message "===                     APPLY DIGITAL CLOCK MOD                       ==="
-      fi      
-      
+      fi
+
       /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="START SPEEDOMETER?" --ok-label="BAR" --cancel-label="CLASSIC"
       CHOICE=$?
       killall jci-dialog
       if [ $CHOICE -eq 0 ]
       then
         # Bar Speedo Mod
-        sed -i 's/var barSpeedometerMod = false;/var barSpeedometerMod = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js 
+        sed -i 's/var barSpeedometerMod = false;/var barSpeedometerMod = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
         log_message "===       Set flag for bar speedometer in speedometer-startup.js      ==="
       fi
-      
+
       /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="MODDED SPEEDOMETER?" --ok-label="ANALOG" --cancel-label="DIGITAL"
       CHOICE=$?
       killall jci-dialog
@@ -669,7 +669,7 @@ speedo_install()
         sed -i 's/var startAnalog = false;/var startAnalog = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
         log_message "===               START MODED SPEEDOMETER IN ANALOG MODE              ==="
       fi
-      
+
       killall jci-dialog
       /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="STATUSBAR SPEEDOMETER?" --ok-label="Car Speed" --cancel-label="GPS Speed" --button3-label="None"
       CHOICE=$?
@@ -688,7 +688,7 @@ speedo_install()
         sed -i 's/var enableSmallSbSpeedo = true;/var enableSmallSbSpeedo = false;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
         log_message "===              DISABLE SMALL SPEEDOMETER IN STATUSBAR               ==="
       fi
-      
+
       #/jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="SPEED COUNTER ANIMATION?" --ok-label="ENABLE" --cancel-label="DISABLE"
       #CHOICE=$?
       #killall jci-dialog
@@ -698,8 +698,8 @@ speedo_install()
       #  sed -i 's/var speedAnimation = false;/var speedAnimation = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
       #  log_message "===                 DISABLE SPEED COUNTER ANIMATION                   ==="
       #fi
-    fi    
-    
+    fi
+
     show_message "INSTALLING MODS ...."
 
     if [ -e ${MYDIR}/config/speedometer-config.js ]
@@ -723,7 +723,7 @@ speedo_install()
     remove_app_json "_speedometer"
     log_message "====================== END OF TWEAKS UNINSTALLATION ====================="
     show_message "========== END OF SPEEDOMETER UNINSTALLATION =========="
-  fi   
+  fi
 }
 
 # End of installation
@@ -750,8 +750,7 @@ start_install
 preinstall_ops
 
 speedo_cleanup
-    
+
 speedo_install
 
 end_install
-

@@ -57,5 +57,3 @@ typings/
 # dotenv environment variables file
 .env
 /release/
-/pack.sh
-/list.txt

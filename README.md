@@ -8,7 +8,7 @@
 >   - Value Positions Fully Customizable
 
 ## How To Install:
-- Download a release zip from [releases](https://github.com/Trevelopment/MZD_Speedometer/releases) page
+- Download a release zip from [releases](https://github.com/Trevelopment/MZD_Speedometer/releases) page or <http://speedo.mazdatweaks.win>
 - Unzip onto blank FAT32 formatted USB drive
 - Connect to car USB port and wait for installation to begin (2 - 20 minutes)
 - Choose options when prompted by installer
@@ -155,7 +155,7 @@ var SORV = {
   - (Short) Up: Toggle Alternate Values (Temperatures and Gear Position)
   - (Short) Down: Increase Value Table Font Size
   - (Short) Right: Toggle mph - km/h
-  - (Long) Down: Toggle Modded - Basic Speedometers (Basic mode has no toggles)
+  - (Long) Down: Toggle Modded - Basic Speedometers (Basic mode has no short click toggles)
   - (Long) Left: TBD (Same as Short Click)
   - (Long) Right: TBD (Same as Short Click)
   - (Long) Select: TBD (Same as Short Click)

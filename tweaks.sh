@@ -653,10 +653,10 @@ speedo_install()
       /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="START SPEEDOMETER?" --ok-label="BAR" --cancel-label="CLASSIC"
       CHOICE=$?
       killall jci-dialog
-      if [ $CHOICE -eq 0 ]
+      if [ $CHOICE -eq 1 ]
       then
         # Bar Speedo Mod
-        sed -i 's/var barSpeedometerMod = false;/var barSpeedometerMod = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        sed -i 's/var barSpeedometerMod = true;/var barSpeedometerMod = false;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
         log_message "===       Set flag for bar speedometer in speedometer-startup.js      ==="
       fi
 

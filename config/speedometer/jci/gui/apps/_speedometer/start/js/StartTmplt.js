@@ -12,32 +12,31 @@
 log.addSrcFile("StartTmplt.js", "common");
 
 // StartTmplt constructor
-function StartTmplt(uiaId, parentDiv, templateId, controlProperties)
-{
-    this.divElt = null;
-    this.offScreenCtrl = null;
-    this.templateName = "StartTmplt";
+function StartTmplt(uiaId, parentDiv, templateId, controlProperties) {
+  this.divElt = null;
+  this.offScreenCtrl = null;
+  this.templateName = "StartTmplt";
 
-    this.onScreenClass = "TemplateFull";
+  this.onScreenClass = "TemplateFull";
 
-    log.debug("  templateId in StartTmplt constructor: " + templateId);
+  log.debug("  templateId in StartTmplt constructor: " + templateId);
 
-    //@formatter:off
-    //set the template properties
-    this.properties = {
-    	"statusBarVisible" : false,
-    	"leftButtonVisible" : false,
-    	"hasActivePanel" : false,
-    	"isDialog" : false,
-    };
-    //@formatter:on
+  //@formatter:off
+  //set the template properties
+  this.properties = {
+    "statusBarVisible": false,
+    "leftButtonVisible": false,
+    "hasActivePanel": false,
+    "isDialog": false,
+  };
+  //@formatter:on
 
-    // create the div for template
-    this.divElt = document.createElement('div');
-    this.divElt.id = templateId;
-    this.divElt.className = "TemplateFull";
+  // create the div for template
+  this.divElt = document.createElement('div');
+  this.divElt.id = templateId;
+  this.divElt.className = "TemplateFull";
 
-    parentDiv.appendChild(this.divElt);
+  parentDiv.appendChild(this.divElt);
 }
 
 
@@ -52,8 +51,7 @@ function StartTmplt(uiaId, parentDiv, templateId, controlProperties)
  * @param	eventID	(string) any of the “Internal event name” values in IHU_GUI_MulticontrollerSimulation.docx (e.g. 'cw',
  * 'ccw', 'select')
  */
-StartTmplt.prototype.handleControllerEvent = function(eventID)
-{
+StartTmplt.prototype.handleControllerEvent = function(eventID) {
 
 };
 
@@ -61,8 +59,7 @@ StartTmplt.prototype.handleControllerEvent = function(eventID)
  * Called by the app during templateNoLongerDisplayed. Used to perform garbage collection procedures on the template and
  * its controls.
  */
-StartTmplt.prototype.cleanUp = function()
-{
+StartTmplt.prototype.cleanUp = function() {
 
 };
 

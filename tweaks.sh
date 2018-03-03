@@ -300,7 +300,7 @@ preinstall_ops()
     log_message "************************* INSTALLATION ABORTED **************************" && reboot
     exit 1
   fi
-   # Compatibility Check
+  # Compatibility Check
   if [ $COMPAT_GROUP -ne 0 ]
   then
     if [ $SKIPCONFIRM -eq 1 ]
@@ -525,6 +525,27 @@ choose_language()
     fi
   fi
 }
+statusbar_speedo_mods()
+{
+  /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="DIGITAL CLOCK FONT?" --ok-label="YES" --cancel-label="NO"
+  CHOICE=$?
+  killall jci-dialog
+  if [ $CHOICE -eq 0 ]
+  then
+    # Digital Clock Mod
+    sed -i '/Remove this/d' /jci/gui/apps/_speedometer/css/StatusBarSpeedometer.css
+    log_message "===                     APPLY DIGITAL CLOCK MOD                       ==="
+  fi
+
+  /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="EXTRA STATUSBAR VALUES?\n\n1. OUTSIDE TEMPERATURE & FUEL EFFICIENCY\n2. HEADING & ALTITUDE" --ok-label="1.TEMP/FUEL" --cancel-label="2.HEAD/ALT"
+  CHOICE=$?
+  killall jci-dialog
+  if [ $CHOICE -eq 0 ]
+  then
+    sed -i 's/var sbTemp = false;/var sbTemp = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+    log_message "===                   ADD TEMPERATURE TO STATUSBAR                    ==="
+  fi
+}
 
 # Install speedometer
 speedo_install()
@@ -640,16 +661,6 @@ speedo_install()
         log_message "===                   TEMPERATURE SET TO FAHRENHEIT                   ==="
       fi
 
-      /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="DIGITAL CLOCK FONT?" --ok-label="YES" --cancel-label="NO"
-      CHOICE=$?
-      killall jci-dialog
-      if [ $CHOICE -eq 0 ]
-      then
-        # Digital Clock Mod
-        sed -i '/Remove this/d' /jci/gui/apps/_speedometer/css/StatusBarSpeedometer.css
-        log_message "===                     APPLY DIGITAL CLOCK MOD                       ==="
-      fi
-
       /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="START SPEEDOMETER?" --ok-label="BAR" --cancel-label="CLASSIC"
       CHOICE=$?
       killall jci-dialog
@@ -689,12 +700,17 @@ speedo_install()
         log_message "===              DISABLE SMALL SPEEDOMETER IN STATUSBAR               ==="
       fi
 
+      if [ $CHOICE -eq 0 ] || [ $CHOICE -eq 1 ]
+      then
+        statusbar_speedo_mods
+      fi
+
       #/jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="SPEED COUNTER ANIMATION?" --ok-label="ENABLE" --cancel-label="DISABLE"
       #CHOICE=$?
       #killall jci-dialog
       #if [ $CHOICE -eq 0 ]
       #then
-        # Enable counter animation
+      # Enable counter animation
       #  sed -i 's/var speedAnimation = false;/var speedAnimation = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
       #  log_message "===                 DISABLE SPEED COUNTER ANIMATION                   ==="
       #fi

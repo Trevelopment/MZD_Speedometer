@@ -376,8 +376,7 @@
   width: 278px;
   z-index: 101;
 }
-#speedometerContainer .RPMIndicator,
-#speedometerContainer .topRPMIndicator {
+#speedometerContainer .RPMIndicator, #speedometerContainer .topRPMIndicator {
   width: 25px;
   height: 310px;
   background: url('../images/RPMNeedle.png') no-repeat scroll center center transparent;
@@ -432,8 +431,7 @@
   left: 220px;
   top: 15px;
 }
-#speedometerContainer #rpmDial .unit,
-#speedometerContainer #rpmDial .scale {
+#speedometerContainer #rpmDial .unit, #speedometerContainer #rpmDial .scale {
   color: #808080;
   font-size: 12px;
   left: 47px;
@@ -447,16 +445,10 @@
 }
 /* end org */
 
-#speedometerContainer .alt0 #outsideTempFieldSet,
-#speedometerContainer .alt0 #intakeTempFieldSet,
-#speedometerContainer .alt0 #coolantTempFieldSet,
-#speedometerContainer .alt0 #gearPositionFieldSet {
+#speedometerContainer .alt0 #outsideTempFieldSet, #speedometerContainer .alt0 #intakeTempFieldSet, #speedometerContainer .alt0 #coolantTempFieldSet, #speedometerContainer .alt0 #gearPositionFieldSet {
   display: block;
 }
-#speedometerContainer .alt0 #Drv1AvlFuelEFieldSet,
-#speedometerContainer .alt0 #tripTimeFieldSet,
-#speedometerContainer .alt0 #idleTimeFieldSet,
-#speedometerContainer .alt0 #engIdleTimeFieldSet {
+#speedometerContainer .alt0 #Drv1AvlFuelEFieldSet, #speedometerContainer .alt0 #tripTimeFieldSet, #speedometerContainer .alt0 #idleTimeFieldSet, #speedometerContainer .alt0 #engIdleTimeFieldSet {
   display: none;
 }
 /* For Resize Mods */
@@ -471,9 +463,6 @@
   font-weight: 700;
   font-size: 30px;
 }
-#speedometerContainer .alt1 #intakeTempFieldSet,
-#speedometerContainer .alt1 #coolantTempFieldSet,
-#speedometerContainer .alt1 #idleTimeFieldSet,
-#speedometerContainer .alt1 #engIdleTimeFieldSet {
+#speedometerContainer .alt1 #intakeTempFieldSet, #speedometerContainer .alt1 #coolantTempFieldSet, #speedometerContainer .alt1 #idleTimeFieldSet, #speedometerContainer .alt1 #engIdleTimeFieldSet {
   display: none;
 }

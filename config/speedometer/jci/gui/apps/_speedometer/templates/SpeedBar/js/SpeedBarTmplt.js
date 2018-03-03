@@ -221,7 +221,7 @@ function SpeedBarTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '	' +
     '	</div>' +
     '</div>';
-  $.getScript('apps/_speedometer/js/speedometerUpdate.js', setTimeout(function() {
+  $.getScript('apps/_speedometer/js/speedometerUpdate.js', setTimeout(function () {
     updateSpeedoApp();
   }, 700));
 }
@@ -229,7 +229,7 @@ function SpeedBarTmplt(uiaId, parentDiv, templateID, controlProperties) {
  *  @param clickTarget (jQuery Object) The jQuery Object to click on a single click action
  *  clickTarget can also be a function
  */
-SpeedBarTmplt.prototype.singleClick = function(clickTarget) {
+SpeedBarTmplt.prototype.singleClick = function (clickTarget) {
   (speedometerLonghold) ? speedometerLonghold = false: (typeof clickTarget === "function") ? clickTarget() : clickTarget.click();
   clearTimeout(this.longholdTimeout);
   this.longholdTimeout = null;
@@ -237,8 +237,8 @@ SpeedBarTmplt.prototype.singleClick = function(clickTarget) {
 /*
  *  @param clickFunction (function) Function to run on a long click
  */
-SpeedBarTmplt.prototype.longClick = function(clickFunction) {
-  this.longholdTimeout = setTimeout(function() {
+SpeedBarTmplt.prototype.longClick = function (clickFunction) {
+  this.longholdTimeout = setTimeout(function () {
     speedometerLonghold = true;
     clickFunction();
   }, 1200);
@@ -254,70 +254,70 @@ SpeedBarTmplt.prototype.longClick = function(clickFunction) {
  * @param   eventID (string) any of the “Internal event name” values in IHU_GUI_MulticontrollerSimulation.docx (e.g. 'cw',
  * 'ccw', 'select')
  */
-SpeedBarTmplt.prototype.handleControllerEvent = function(eventID) {
+SpeedBarTmplt.prototype.handleControllerEvent = function (eventID) {
   log.debug("handleController() called, eventID: " + eventID);
 
   var retValue = 'giveFocusLeft';
 
   switch (eventID) {
-    case "upStart":
-      this.longClick(function() {
-        AIO_SBN("Classic Speedometer", "apps/_speedometer/templates/SpeedoMeter/images/speed.png");
-        aioMagicRoute("_speedometer", "SpeedClassic");
-      });
-      retValue = "consumed";
-      break;
-    case "up":
-      this.singleClick($('.spdBtn1'));
-      retValue = "consumed";
-      break;
-    case "downStart":
-      this.longClick(function() {
-        $('[class^=speedBar]').toggle();
-        AIO_SBN(($('.speedBar_5').css('display').indexOf('none') !== -1 ? "Hide" : "Show") + " Speed Bar", "apps/_speedometer/IcnSbnSpeedometer.png");
-      });
-      retValue = "consumed";
-      break;
-    case "down":
-      this.singleClick($('.spdBtn2'));
-      retValue = "consumed";
-      break;
-    case "selectStart":
-      this.longClick(function() {
-        // Placeholder for holding select
-        $('.spdBtn0').click(); // for now just does the same thing as click
-      });
-      retValue = "consumed";
-      break;
-    case "select":
-      this.singleClick($('.spdBtn0'));
-      break;
-    case "rightStart":
-      this.longClick(function() {
-        // Placeholder for holding right
-        $('.spdBtn3').click(); // for now just does the same thing as click
-      });
-      retValue = "consumed";
-      break;
-    case "right":
-      this.singleClick($('.spdBtn3'));
-      retValue = "consumed";
-      break;
-    case "leftStart":
-      this.longClick(function() {
-        // Placeholder for holding left
-        $('.spdBtn4').click(); // for now just does the same thing as click
-      });
-      retValue = "consumed";
-      break;
-    case "left":
-      this.singleClick($('.spdBtn4'));
-      retValue = "consumed";
-      break;
-      //  case "cw":
-      //  case "ccw":
-    default:
-      retValue = "ignored";
+  case "upStart":
+    this.longClick(function () {
+      AIO_SBN("Classic Speedometer", "apps/_speedometer/templates/SpeedoMeter/images/speed.png");
+      aioMagicRoute("_speedometer", "SpeedClassic");
+    });
+    retValue = "consumed";
+    break;
+  case "up":
+    this.singleClick($('.spdBtn1'));
+    retValue = "consumed";
+    break;
+  case "downStart":
+    this.longClick(function () {
+      $('[class^=speedBar]').toggle();
+      AIO_SBN(($('.speedBar_5').css('display').indexOf('none') !== -1 ? "Hide" : "Show") + " Speed Bar", "apps/_speedometer/IcnSbnSpeedometer.png");
+    });
+    retValue = "consumed";
+    break;
+  case "down":
+    this.singleClick($('.spdBtn2'));
+    retValue = "consumed";
+    break;
+  case "selectStart":
+    this.longClick(function () {
+      // Placeholder for holding select
+      $('.spdBtn0').click(); // for now just does the same thing as click
+    });
+    retValue = "consumed";
+    break;
+  case "select":
+    this.singleClick($('.spdBtn0'));
+    break;
+  case "rightStart":
+    this.longClick(function () {
+      // Placeholder for holding right
+      $('.spdBtn3').click(); // for now just does the same thing as click
+    });
+    retValue = "consumed";
+    break;
+  case "right":
+    this.singleClick($('.spdBtn3'));
+    retValue = "consumed";
+    break;
+  case "leftStart":
+    this.longClick(function () {
+      // Placeholder for holding left
+      $('.spdBtn4').click(); // for now just does the same thing as click
+    });
+    retValue = "consumed";
+    break;
+  case "left":
+    this.singleClick($('.spdBtn4'));
+    retValue = "consumed";
+    break;
+    //  case "cw":
+    //  case "ccw":
+  default:
+    retValue = "ignored";
   }
 
   return retValue;
@@ -326,7 +326,7 @@ SpeedBarTmplt.prototype.handleControllerEvent = function(eventID) {
  * Called by the app during templateNoLongerDisplayed. Used to perform garbage collection procedures on the template and
  * its controls.
  */
-SpeedBarTmplt.prototype.cleanUp = function() {
+SpeedBarTmplt.prototype.cleanUp = function () {
   swapOut = null;
 };
 

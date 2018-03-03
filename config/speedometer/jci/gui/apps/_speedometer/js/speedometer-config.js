@@ -48,7 +48,7 @@ var spdTbl = {
 /* ************************************************** */
 /* Set overRideSpeed to true to use your values below */
 /* If this is false the following values are not used */
-var overRideSpeed=false;
+var overRideSpeed = false;
 /* ************************************************** */
 /* * Start OverRide Variables *********************** */
 var SORV = {

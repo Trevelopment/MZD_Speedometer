@@ -1,28 +1,47 @@
 function updateSpeedoApp() {
   // remove all disabled values
   $('[class*="vehDataBar"].pos0').remove();
+  for (var i = 5; i > spdBottomRows; i--) {
+    $('.vehDataBar' + i).remove();
+  }
+  $('.StatusBarCtrlAppName').off('click');
   if (enableSmallSbSpeedo) {
     $('#SbSpeedo').fadeIn();
   }
   if (barSpeedometerMod || speedMod) {
     if (barSpeedometerMod) {
       var rows = (typeof spdBottomRows !== "undefined") ? spdBottomRows : 3;
-      $('.spdBtn0').click(function() {
+      $('.spdBtn0').click(function () {
         (currDataBar > rows - 1) ? currDataBar = 1: currDataBar++;
         $('[class*="vehDataBar"]').removeClass('activeDataBar');
         $('.vehDataBar' + currDataBar).addClass('activeDataBar');
       });
-      $('.spdBtn2').click(function() {
+      $('.spdBtn2').click(function () {
         engineSpeedBar = !engineSpeedBar;
         AIO_SBN("Speed Bar: " + (engineSpeedBar ? $('#engineSpeedFieldSet legend').text() : $('#speedCurrentFieldSet legend').text()), "apps/_speedometer/IcnSbnSpeedometer.png");
       });
       if (hideSpeedBar) {
         $('[class^=speedBar]').toggle();
       }
+      // Save/Load  Bar Speedometer Layout on Statusbar click
+      // EXPERIMENTAL FEATURE REMOVE COMMENTS TO TEST
+      /*
+      $('.StatusBarCtrlAppName').click(function () {
+        if (!speedometerLayout) {
+          speedometerLayout = DOMtoJSON(document.getElementById('vehdataMainDiv'));
+          AIO_SBN("Layout Saved", "apps/_speedometer/IcnSbnSpeedometer.png");
+        } else {
+          $('#vehdataMainDiv').html(JSONtoDOM(speedometerLayout));
+          speedometerLayout = null;
+          updateSpeedoApp();
+          AIO_SBN("Loaded Saved Layout", "apps/_speedometer/IcnSbnSpeedometer.png");
+        }
+      })
+      */
     } else if (speedMod) {
       // touch to toggle Analog / Digital
       // --------------------------------------------------------------------------
-      $('.spdBtn0').click(function() {
+      $('.spdBtn0').click(function () {
         if ($('#analog').is(':visible')) {
           $('#digital').show();
           $('#analog').hide();
@@ -36,17 +55,17 @@ function updateSpeedoApp() {
 
       // Hide Idle Values and enlarge the fonts of the other values
       // --------------------------------------------------------------------------
-      $('.spdBtn2').click(function() {
+      $('.spdBtn2').click(function () {
         $('#valuetable').toggleClass('alt1');
       });
       // Show alternate values
       // --------------------------------------------------------------------------
-      $('.spdBtn3').click(function() {
+      $('.spdBtn3').click(function () {
         $('#valuetable').toggleClass('alt0');
       });
       // Reset Values to 0  values are updated right away
       // --------------------------------------------------------------------------
-      $('#tripTimeFieldSet').click(function() {
+      $('#tripTimeFieldSet').click(function () {
         tripDistCurrent = 0;
         prevTripDist = 0;
         tripDistBkp = 0;
@@ -70,7 +89,7 @@ function updateSpeedoApp() {
     // Toggle Fuel Efficiency or Temperature
     // --------------------------------------------------------------------------
     var fuelToggler = (barSpeedometerMod) ? $('.spdBtn3') : $('#Drv1AvlFuelEFieldSet');
-    fuelToggler.click(function() {
+    fuelToggler.click(function () {
       (isMPH) ? toggleTempUnit(): toggleFuelEffUnit();
       //speedAnimation = !speedAnimation;
     });
@@ -125,11 +144,7 @@ function updateSpeedoApp() {
         $('#tripDistFieldSet').removeClass('mphbu');
         $('legend .distUnit').text('km');
         $('legend .altUnit').text('m');
-        if (fuelEffunit_kml) {
-          $('legend .fuelEffUnit').html('km/L &empty;');
-        } else {
-          $('legend .fuelEffUnit').html('L/100 km &empty;');
-        }
+        $('legend .fuelEffUnit').html(fuelEffunit_kml ? 'km/L &empty;' : 'L/100 km &empty;');
         if (!barSpeedometerMod) {
           $('#speedometerDial').removeClass('mph');
           $('#speedometerContainer .vehicleSpeed').css("background", "url('apps/_speedometer/templates/SpeedoMeter/images/currentSpeed.png') no-repeat scroll center center transparent");
@@ -445,15 +460,12 @@ function updateSpeedoApp() {
     }
   } else {
     $('.speedUnit').text('km/h');
-    $('legend .fuelEffUnit').html('L/100 km &empty;');
+    $('legend .fuelEffUnit').html(fuelEffunit_kml ? 'km/L &empty;' : 'L/100 km &empty;');
     if (!barSpeedometerMod) {
       $('.topSpeedIndicator').css("transform", "rotate(" + (-120 + speedTop) + "deg)");
     }
   }
 
-  if (fuelEffunit_kml) {
-    $('legend .fuelEffUnit').html('km/L &empty;');
-  }
 
   // custom background
   if (!original_background_image && black_background_opacity > 0.0 && black_background_opacity <= 1.0) {
@@ -480,8 +492,9 @@ function updateSpeedoApp() {
     $('.gpsAltitudeMinMax').html(altGPSmin + ' / ' + altGPSmax);
   }
   if (barSpeedometerMod) {
-    loadSpeedoTemplate();
-    $('.vehDataBar1').addClass('activeDataBar');
+    if ($('.activeDataBar').length === 0) {
+      $('.vehDataBar1').addClass('activeDataBar');
+    }
     $('.speedTopValue').html(speedTop);
     $('.engineSpeedTopValue').html(engineSpeedTop);
     $('.TotFuelEfficiency').html(TotFuelEfficiency);

@@ -106,9 +106,7 @@
   padding-right: 6px;
   font-size: 12px;
 }
-#speedBarContainer #vehdataMainDiv fieldset .gpsLatitudeValue,
-#speedBarContainer #vehdataMainDiv fieldset .gpsLongitudeValue,
-#speedBarContainer #vehdataMainDiv fieldset .gpsAltitudeMinMax {
+#speedBarContainer #vehdataMainDiv fieldset .gpsLatitudeValue, #speedBarContainer #vehdataMainDiv fieldset .gpsLongitudeValue, #speedBarContainer #vehdataMainDiv fieldset .gpsAltitudeMinMax {
   font-size: 22px;
   margin-top: 11px;
   white-space: nowrap;
@@ -207,30 +205,22 @@
   padding: 0 50px;
   border: 2px dashed transparent;
 }
-#speedBarContainer #vehdataMainDiv [id*=gear].pos0,
-#speedBarContainer #vehdataMainDiv [id*=speed].pos0,
-#speedBarContainer #vehdataMainDiv [id*=gpsSpeed].pos0 {
+#speedBarContainer #vehdataMainDiv [id*=gear].pos0, #speedBarContainer #vehdataMainDiv [id*=speed].pos0, #speedBarContainer #vehdataMainDiv [id*=gpsSpeed].pos0 {
   bottom: 200px;
 }
-#speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=gear],
-#speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=speed],
-#speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=vehicleSpeed],
-#speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=gpsSpeed] {
+#speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=gear], #speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=speed], #speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=vehicleSpeed], #speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class*=gpsSpeed] {
   font-size: 225px;
 }
 #speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class$=dleTimeValue] {
   font-size: 120px;
 }
-#speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div .idleHours,
-#speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class^=gpsL],
-#speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div.gpsAltitudeMinMax {
+#speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div .idleHours, #speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div[class^=gpsL], #speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div.gpsAltitudeMinMax {
   font-size: 90px;
 }
 #speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 legend {
   visibility: hidden;
 }
-#speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 legend .fuelEffUnit,
-#speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 legend .spunit span {
+#speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 legend .fuelEffUnit, #speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 legend .spunit span {
   width: 100px;
   transform: translate(-50%, -50%);
   position: fixed;
@@ -256,10 +246,7 @@
   left: 560px;
   font-size: 20px;
 }
-#speedBarContainer #vehdataMainDiv #gpsSpeedFieldSet[class*="vehDataBar"] .spunit,
-#speedBarContainer #vehdataMainDiv #speedCurrentFieldSet[class*="vehDataBar"] .spunit,
-#speedBarContainer #vehdataMainDiv fieldset[class*="vehDataBar"].pos0,
-#speedBarContainer #vehdataMainDiv fieldset.hidden {
+#speedBarContainer #vehdataMainDiv #gpsSpeedFieldSet[class*="vehDataBar"] .spunit, #speedBarContainer #vehdataMainDiv #speedCurrentFieldSet[class*="vehDataBar"] .spunit, #speedBarContainer #vehdataMainDiv fieldset[class*="vehDataBar"].pos0, #speedBarContainer #vehdataMainDiv fieldset.hidden {
   display: none !important;
 }
 /*#speedBarContainer fieldset div {
@@ -274,8 +261,7 @@
   border-right: none;
   border-left: none;
 }
-#speedBarContainer #vehdataMainDiv .swapOut,
-#speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div.swapOut {
+#speedBarContainer #vehdataMainDiv .swapOut, #speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 div.swapOut {
   background: -webkit-linear-gradient(rgba(255, 255, 255, .25) 25%, rgba(0, 28, 107, .5));
   border: 2px dashed threedface;
 }

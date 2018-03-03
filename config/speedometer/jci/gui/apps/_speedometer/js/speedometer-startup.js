@@ -23,6 +23,7 @@ if (!window.jQuery) {
 
 framework.transitionsObj._genObj._TEMPLATE_CATEGORIES_TABLE.SpeedoMeterTmplt = "Detail with UMP";
 framework.transitionsObj._genObj._TEMPLATE_CATEGORIES_TABLE.SpeedBarTmplt = "Detail with UMP";
+framework.transitionsObj._genObj._TEMPLATE_CATEGORIES_TABLE.StartTmplt = "Detail with UMP";
 
 function SbSpeedo() {
   $('head').prepend($('<link rel="stylesheet" type="text/css" />').attr('href', 'apps/_speedometer/css/StatusBarSpeedometer.css'));
@@ -35,11 +36,11 @@ function SbSpeedo() {
     $('.speedUnit').text('km/h');
   }
 
-  $('.StatusBarCtrlClock').click(function() {
+  $('.StatusBarCtrlClock').click(function () {
     $('#SbSpeedo').fadeToggle();
   });
 
-  setInterval(function() {
+  setInterval(function () {
     if (framework.getCurrentApp() === 'backupparking') {
       $('#SbSpeedo').addClass('parking');
     } else {
@@ -66,8 +67,8 @@ function toggleSbSpeedoExtra() {
 
 
 //addonInit();
-setTimeout(function() {
-  $.getScript("apps/_speedometer/js/speedometer.js", function() {
+setTimeout(function () {
+  $.getScript("apps/_speedometer/js/speedometer.js", function () {
     loadSpeedoTemplate();
     if (enableSmallSbSpeedo) {
       SbSpeedo();

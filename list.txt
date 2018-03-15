@@ -1,3 +1,4 @@
+readme.htm
 config
 cmu_*
 data*

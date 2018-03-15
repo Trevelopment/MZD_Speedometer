@@ -110,4 +110,12 @@ var SORV = {
   // False to disable speed counter animation
   // The animation causes the digital number to lag by 1 second
   speedAnimation: false,
+
+  // Set this to the color of the Analog SpeedoMeter
+  // Valid Colors are (Capitalized and in quotes): Red, Blue, Green, Yellow, Pink, Orange, Purple, silver
+  analogColor: "Red",
+
+  // Set to the color theme for Bar SpeedoMeter
+  // Theme will be a number 0-5 (0 is default white)
+  barTheme: 0,
 };

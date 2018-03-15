@@ -232,6 +232,7 @@
   opacity: 1;
   left: 560px;
   bottom: 140px;
+  transition: .6s ease-in-out .3s;
 }
 #speedBarContainer #vehdataMainDiv [class*="vehDataMain"].pos0 span.idlePercent {
   position: fixed;

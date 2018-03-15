@@ -1,23 +1,36 @@
 # MZD_Speedometer v5
-###  A Versatile Speedometer App For The MZD Infotainment System
+
+[Changelog](https://github.com/Trevelopment/MZD_Speedometer/changelog.md "changelog")
+
+### A Versatile Speedometer App For The MZD Infotainment System
+
 > **2 Speedometers in 1 With Multiple Variants:**
-> - Classic MZD Speedometer (By Diginix)
->   - Basic Analog Speedometer With Rotating Compass
->   - Modded Digital & Analog Speedometer With Toggle Controls
-> - Digital Bar Speedometers
->   - Value Positions Fully Customizable
+>
+> -   Classic MZD Speedometer
+>     -   Basic Analog Speedometer With Rotating Compass
+>     -   Modded Digital & Analog Speedometer With Toggle Controls
+>     -   Change Colors, Text Size, Table Values
+> -   Digital Bar Speedometers
+>     -   Value Positions [Fully Customizable](config/speedometer-config.js)
+>     -   [Customizable Themes](config/barThemes.css)
+> -   [Remap Multicontroller Functions](config/speedometer-controls.js) For Both Speedometers
 
 ## How To Install:
-- Download a release zip from [releases](https://github.com/Trevelopment/MZD_Speedometer/releases) page or <http://speedo.mazdatweaks.win>
-- Unzip onto blank FAT32 formatted USB drive
-- Connect to car USB port and wait for installation to begin (2 - 20 minutes)
-- Choose options when prompted by installer
-- For more info visit [MazdaTweaks.com](https://mazdatweaks.com)
+
+-   Download a release zip from [releases](https://github.com/Trevelopment/MZD_Speedometer/releases) page or <http://speedo.mazdatweaks.win>
+-   Unzip onto blank FAT32 formatted USB drive
+-   Connect to car USB port and wait for installation to begin (2 - 20 minutes)
+-   Choose options when prompted by installer
+-   For more info visit [MazdaTweaks.com](https://mazdatweaks.com)
 
 ![MZD Speedometers](MZD_Speedo.gif)
+
 ## How To Customize
- > To customize edit the configuration file `/config/speedometer-config.js`
+
+ To customize edit the configuration file [speedometer-config.js](/config/speedometer-config.js)
+
 ##### Example Configuration:
+
 ```js
 /** speedometer-config.js ************************************************************** *\
 |* =========================                                                             *|
@@ -34,7 +47,6 @@
 |* To Hide a Value = [1, 1, 0] (Any bottom row position 0 will hide the value)           *|
 |* To Change Bottom Row Push Command Knob ("Select")                                     *|
 |* Note: Only numbers inside [] brackets determine position, order in this list DOES NOT *|
-|* ******* DELETE THIS CONFIG FILE TO REUSE YOUR CURRENT CONFIG-SPEEDOMETER.JS ********* *|
 \* ************************************************************************************* */
 var spdBottomRows = 3;   //Number of Bottom Rows
 var spdTbl = { // Example Layout:
@@ -136,26 +148,117 @@ var SORV = {
   speedAnimation: false,
 };
 ```
-### Controls
+
+### Controls - [speedometer-controls.js](/config/speedometer-controls.js)
+
 > (Long Hold Is 1.5 Seconds)
 
-- (Long) Up: Change from Classic To Bar Spedometers (Both)
-- (Short) Left: Toggle Speedometer Background (Both)
-- Digital Bar
-  - (Short) Select: Toggle Next Bottom Row
-  - (Short) Up: Toggle mph - km/h
-  - (Short) Down: Toggle Speed Bar: Vehicle Speed - RPM
-  - (Short) Right: In mph Toggle Temp (C - F) and km/h Toggle Fuel Efficiency (L/100km - km/L)
-  - (Long) Down: Hide / Show Speed Bar
-  - (Long) Left: TBD (Same as Short Click)
-  - (Long) Right: TBD (Same as Short Click)
-  - (Long) Select: TBD (Same as Short Click)
-- Classic (Modded)
-  - (Short) Select: Change between Analog w/ Compass & Digital
-  - (Short) Up: Toggle Alternate Values (Temperatures and Gear Position)
-  - (Short) Down: Increase Value Table Font Size
-  - (Short) Right: Toggle mph - km/h
-  - (Long) Down: Toggle Modded - Basic Speedometers (Basic mode has no short click toggles)
-  - (Long) Left: TBD (Same as Short Click)
-  - (Long) Right: TBD (Same as Short Click)
-  - (Long) Select: TBD (Same as Short Click)
+```js
+/** speedometer-controls.js ************************************************************** *\
+|* =========================
+|* Speedometer Controls - Used to map multicontroller "clicks" to toggle actions/events
+|* =========================
+|* Numbers may be used multiple times.  Ex: set all directions under bar to 4
+|* and all multicontroller directions will toggle the background
+|* KEY:
+|* Both Speedometers: (Same by default but can be set independently)
+|* 1: (Default: up) - Toggle Speed Unit (mph-km/h)
+|* 3: (Default: right) - Toggle Temp C-F (mph mode) Fuel Eff L/km-km/100L (km/h mode)
+|* 4: (Default: left) - Toggle Background
+|* 8: (Default: hold.right) - Reset Trip Time, Distance, Top/Ave Speed
+|* 9: (Default: hold.left) - Change Color Theme
+|* Bar (Colored Speed Bar w/ Bottom Rows):
+|* 0: (Default: select) - Show Next Bottom Row
+|* 2: (Default: down) - Toggle Speed Bar (VehSpeed-RPM)
+|* 5: (Default: hold.select) - Reset Layout
+|* 6: (Default: hold.up) - Switch To Classic Speedometer
+|* 7: (Default: hold.down) - Hide/Show Speed Bar
+|* Classic (Analog w/ Compass):
+|* 0: (Default: select) - Toggle Speed (Analog-Digital)
+|* 2: (Default: down) - Toggle Larger Text
+|* 5: (Default: hold.select) - Toggle Alternate Values (Time-Temp)
+|* 6: (Default: hold.up) - Switch To Bar Speedometer
+|* 7: (Default: hold.down) - Basic Speedo - Analog & Disables Toggles Except Itself To Toggle Back
+|* ************************************************************************************* *|
+|* null: To Disable Multicontroller Key (do not leave any blank!!!)
+\* ************************************************************************************* */
+var spdBtn = {
+  bar: { // Controls for the Bar Speedometer context
+    select: 0,
+    up: 1,
+    down: 2,
+    right: 3,
+    left: 4,
+    hold: { // Used when the click is held for 2 seconds
+      select: 5,
+      up: 6,
+      down: 7,
+      right: 8,
+      left: 9,
+    }
+  },
+  classic: { // Controls for the Classic (Analog) Speedometer context
+    select: 0,
+    up: 1,
+    down: 2,
+    right: 3,
+    left: 4,
+    hold: { // Used when the click is held for 2 seconds
+      select: 5,
+      up: 6,
+      down: 7,
+      right: 8,
+      left: 9,
+    }
+  }
+};
+```
+
+### Custom Themes For Bar Speedometer - [barThemes.css](/config/barThemes.css)
+
+```css
+/* barThemes.css - Customize Bar Speedometer Color Themes
+* Any Valid CSS Colors Can Be Used Examples:
+* Names -    Ex: blue;
+* Hex -      Ex: #00ff66;
+* RGB -      Ex: rgb(100, 255, 0);
+* HSL -      Ex: hsl(248, 53%, 58%);
+* For More Info On CSS Colors Visit https://www.w3schools.com/colors/colors_names.asp
+* Each Theme Has 3 Colors In This Order:
+* Primary - Color of Values
+* Secondary - Color of Labels/Units
+* Border-Color - Color of the Box Borders
+* If you know CSS then have fun with it
+* CSS is a very forgiving language any errors in this file will be ignored
+*/
+
+/* Theme #1 */
+
+#speedBarContainer.theme1 #vehdataMainDiv fieldset div, #speedBarContainer.theme1 #vehdataMainDiv [class*="vehDataMain"].pos0 div {
+  /* Primary */
+  color: aquamarine;
+}
+
+#speedBarContainer.theme1 #vehdataMainDiv [class*="vehDataMain"].pos0 legend .spunit span, #speedBarContainer.theme1 #vehdataMainDiv fieldset {
+  /* Secondary */
+  color: #64bfff;
+  /* Border-Color */
+  border-color: blue;
+}
+
+/* Theme #2 */
+
+#speedBarContainer.theme2 #vehdataMainDiv fieldset div, #speedBarContainer.theme2 #vehdataMainDiv [class*="vehDataMain"].pos0 div {
+  color: #3fff17;
+}
+
+#speedBarContainer.theme2 #vehdataMainDiv [class*="vehDataMain"].pos0 legend .spunit span, #speedBarContainer.theme2 #vehdataMainDiv fieldset {
+  color: hsl(248, 53%, 58%);
+  border-color: rgb(100, 0, 12);
+}
+
+/* Theme #3 */
+...
+...
+...
+```

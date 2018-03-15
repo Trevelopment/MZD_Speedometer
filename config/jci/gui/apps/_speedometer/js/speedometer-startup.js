@@ -1,5 +1,4 @@
 // See speedometer-config.js for user config
-
 var enableSmallSbSpeedo = true;
 var isMPH = true;
 var language = "EN";
@@ -15,15 +14,15 @@ var engineSpeedBar = false;
 var hideSpeedBar = false;
 var tempIsF = false;
 var speedAnimation = false;
-
+var analogColor = "Red";
+var speedometerTheme = 0;
 // try not to make changes to the lines below
 if (!window.jQuery) {
   utility.loadScript("addon-common/jquery.min.js");
 }
-
 framework.transitionsObj._genObj._TEMPLATE_CATEGORIES_TABLE.SpeedoMeterTmplt = "Detail with UMP";
 framework.transitionsObj._genObj._TEMPLATE_CATEGORIES_TABLE.SpeedBarTmplt = "Detail with UMP";
-framework.transitionsObj._genObj._TEMPLATE_CATEGORIES_TABLE.StartTmplt = "Detail with UMP";
+framework.transitionsObj._genObj._TEMPLATE_CATEGORIES_TABLE.StartTmplt = "Detail with Back";
 
 function SbSpeedo() {
   $('head').prepend($('<link rel="stylesheet" type="text/css" />').attr('href', 'apps/_speedometer/css/StatusBarSpeedometer.css'));
@@ -35,12 +34,10 @@ function SbSpeedo() {
   } else {
     $('.speedUnit').text('km/h');
   }
-
-  $('.StatusBarCtrlClock').click(function () {
+  $('.StatusBarCtrlClock').click(function() {
     $('#SbSpeedo').fadeToggle();
   });
-
-  setInterval(function () {
+  setInterval(function() {
     if (framework.getCurrentApp() === 'backupparking') {
       $('#SbSpeedo').addClass('parking');
     } else {
@@ -64,12 +61,10 @@ function toggleSbSpeedoExtra() {
   }
   sbTemp = !sbTemp;
 }
-
-
 //addonInit();
-setTimeout(function () {
-  $.getScript("apps/_speedometer/js/speedometer.js", function () {
-    loadSpeedoTemplate();
+setTimeout(function() {
+  $.getScript("apps/_speedometer/js/speedometer.js", function() {
+    LoadSpeedoTemplate();
     if (enableSmallSbSpeedo) {
       SbSpeedo();
     }

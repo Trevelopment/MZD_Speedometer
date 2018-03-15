@@ -42,14 +42,19 @@ function SpeedoMeterTmplt(uiaId, parentDiv, templateID, controlProperties) {
   parentDiv.appendChild(this.divElt);
 
   // do whatever you want here
-  this.divElt.innerHTML = '<!-- MZD Speedometer v5.0 - Variant Mod  -->' +
+  this.divElt.innerHTML = '<!-- MZD Speedometer v5 - Variant Mod  -->' +
     '<div id="speedometerContainer">' +
     '<div id="hideIdleBtn"></div>' +
-    ' <div class="spdBtn0"></div>' +
-    ' <div class="spdBtn1"></div>' +
-    ' <div class="spdBtn2"></div>' +
-    ' <div class="spdBtn3"></div>' +
-    ' <div class="spdBtn4"></div>' +
+    ' <div class="spdBtn' + spdBtn.classic.select + ' spdBtnSelect"></div>' +
+    ' <div class="spdBtn' + spdBtn.classic.up + ' spdBtnUp"></div>' +
+    ' <div class="spdBtn' + spdBtn.classic.down + ' spdBtnDown"></div>' +
+    ' <div class="spdBtn' + spdBtn.classic.right + ' spdBtnRight"></div>' +
+    ' <div class="spdBtn' + spdBtn.classic.left + ' spdBtnLeft"></div>' +
+    ' <div class="spdBtn' + spdBtn.classic.hold.select + ' spdBtnSelecth"></div>' +
+    ' <div class="spdBtn' + spdBtn.classic.hold.up + ' spdBtnUph"></div>' +
+    ' <div class="spdBtn' + spdBtn.classic.hold.down + ' spdBtnDownh"></div>' +
+    ' <div class="spdBtn' + spdBtn.classic.hold.right + ' spdBtnRighth"></div>' +
+    ' <div class="spdBtn' + spdBtn.classic.hold.left + ' spdBtnLefth"></div>' +
     '<div id="table_bg">' +
     '<div id="valuetable">' +
     '<fieldset id="tripDistFieldSet">' +
@@ -178,27 +183,31 @@ function SpeedoMeterTmplt(uiaId, parentDiv, templateID, controlProperties) {
     //'<div class="vehicleSpeed pos0">0</div>' +
     //'<div class="speedUnit">---</div>' +
     '</div>';
-  $.getScript('apps/_speedometer/js/speedometerUpdate.js', setTimeout(function () {
+  //$.getScript('apps/_speedometer/js/speedometerUpdate.js',
+  setTimeout(function() {
     updateSpeedoApp();
-  }, 700));
+  }, 700); //);
 }
 
 /*
  *  @param clickTarget (jQuery Object) The jQuery Object to click on a single click action
- *  clickTarget can also be a function
+ *  clickTarget can also be a function or a string of the DOM node to make the jQuery Object
  */
-SpeedoMeterTmplt.prototype.singleClick = function (clickTarget) {
+SpeedoMeterTmplt.prototype.singleClick = function(clickTarget) {
+  if (typeof clickTarget === "string") { clickTarget = $(clickTarget) }
   (speedometerLonghold) ? speedometerLonghold = false: (typeof clickTarget === "function") ? clickTarget() : clickTarget.click();
   clearTimeout(this.longholdTimeout);
   this.longholdTimeout = null;
 }
 /*
  *  @param clickFunction (function) Function to run on a long click
+ *  clickFunction can also be a a string of the DOM node or jQuery Object to click
  */
-SpeedoMeterTmplt.prototype.longClick = function (clickFunction) {
-  this.longholdTimeout = setTimeout(function () {
+SpeedoMeterTmplt.prototype.longClick = function(clickFunction) {
+  if (typeof clickFunction === "string") { clickFunction = $(clickFunction) }
+  this.longholdTimeout = setTimeout(function() {
     speedometerLonghold = true;
-    clickFunction();
+    (typeof clickFunction === "function") ? clickFunction(): clickFunction.click();
   }, 1200);
 }
 /*
@@ -211,73 +220,58 @@ SpeedoMeterTmplt.prototype.longClick = function (clickFunction) {
  * Handles multicontroller events.
  * @param   eventID (string) any of the “Internal event name” values in IHU_GUI_MulticontrollerSimulation.docx (e.g. 'cw',
  * 'ccw', 'select')
+ * Controller functions are defined in speedometerUpdate.js
  */
-SpeedoMeterTmplt.prototype.handleControllerEvent = function (eventID) {
+SpeedoMeterTmplt.prototype.handleControllerEvent = function(eventID) {
   log.debug("handleController() called, eventID: " + eventID);
 
   var retValue = 'giveFocusLeft';
 
   switch (eventID) {
-  case "upStart":
-    this.longClick(function () {
-      AIO_SBN("Digital Bar Speedometer", "apps/_speedometer/templates/SpeedoMeter/images/digital.png");
-      aioMagicRoute("_speedometer", "SpeedBar");
-    });
-    retValue = "consumed";
-    break;
-  case "up":
-    this.singleClick($('.spdBtn3'));
-    retValue = "consumed";
-    break;
-  case "downStart":
-    this.longClick(function () {
-      AIO_SBN((speedMod ? "Basic" : "Modded") + " Speedometer", (speedMod ? "apps/_speedometer/templates/SpeedoMeter/images/speed.png" : "apps/_speedometer/templates/SpeedoMeter/images/digital.png"));
-      speedMod = !speedMod;
-      updateSpeedoApp();
-    });
-    retValue = "consumed";
-    break;
-  case "down":
-    this.singleClick($('.spdBtn2'));
-    retValue = "consumed";
-    break;
-  case "selectStart":
-    this.longClick(function () {
-      // Placeholder for holding select
-      $('.spdBtn0').click(); // for now just dos the same thing as click
-    });
-    retValue = "consumed";
-    break;
-  case "select":
-    this.singleClick($('.spdBtn0'));
-    retValue = "consumed";
-    break;
-  case "rightStart":
-    this.longClick(function () {
-      // Placeholder for holding right
-      $('.spdBtn1').click(); // for now just does the same thing as click
-    });
-    retValue = "consumed";
-    break;
-  case "right":
-    this.singleClick($('.spdBtn1'));
-    retValue = "consumed";
-    break;
-  case "leftStart":
-    this.longClick(function () {
-      // Placeholder for holding left
-      $('.spdBtn4').click(); // for now just does the same thing as click
-    });
-    retValue = "consumed";
-    break;
-  case "left":
-    this.singleClick($('.spdBtn4'));
-    retValue = "consumed";
-    break;
-    //  case "cw":
-    //  case "ccw":
-  default:
-    retValue = "ignored";
+    case "upStart":
+      this.longClick('.spdBtnUph');
+      retValue = "consumed";
+      break;
+    case "up":
+      this.singleClick('.spdBtnUp');
+      retValue = "consumed";
+      break;
+    case "downStart":
+      this.longClick('.spdBtnDownh');
+      retValue = "consumed";
+      break;
+    case "down":
+      this.singleClick('.spdBtnDown');
+      retValue = "consumed";
+      break;
+    case "selectStart":
+      this.longClick('.spdBtnSelecth');
+      retValue = "consumed";
+      break;
+    case "select":
+      this.singleClick('.spdBtnSelect');
+      retValue = "consumed";
+      break;
+    case "rightStart":
+      this.longClick('.spdBtnRighth');
+      retValue = "consumed";
+      break;
+    case "right":
+      this.singleClick('.spdBtnRight');
+      retValue = "consumed";
+      break;
+    case "leftStart":
+      this.longClick('.spdBtnLefth');
+      retValue = "consumed";
+      break;
+    case "left":
+      this.singleClick('.spdBtnLeft');
+      retValue = "consumed";
+      break;
+      //  case "cw":
+      //  case "ccw":
+    default:
+      retValue = "ignored";
   }
 
   return retValue;
@@ -286,7 +280,7 @@ SpeedoMeterTmplt.prototype.handleControllerEvent = function (eventID) {
  * Called by the app during templateNoLongerDisplayed. Used to perform garbage collection procedures on the template and
  * its controls.
  */
-SpeedoMeterTmplt.prototype.cleanUp = function () {
+SpeedoMeterTmplt.prototype.cleanUp = function() {
 
 };
 

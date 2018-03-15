@@ -1,20 +1,21 @@
 #!/bin/sh
-# tweaks.sh - MZD Speedometer Version 5.5
+# tweaks.sh - MZD Speedometer Version 5.6-Pre-release
 # Configurable Installer
 # By Diginix, Trezdog44, & Many Others
-# For more information visit https://mazdatweaks.com
-# Enjoy, Trezdog44 - Trevelopment.com
+# GitHub Repo: https://github.com/Trevelopment/MZD_Speedometer
+# License: GPLv3 - https://www.gnu.org/licenses/gpl-3.0.html
+# Enjoy, Trezdog44 - https://mazdatweaks.com
 
 # Time
 hwclock --hctosys
 
 # AIO Variables
-AIO_VER=5.5
-AIO_DATE=2018.02.28
+AIO_VER=5.6-Pre.Release
+AIO_DATE=2018.03.16
 
-# Set to 1 to skip confirmation (& use default settings)
+# Set to 1 to skip confirmation (configure settings in speedometer-config.js)
 SKIPCONFIRM=0
-# Set to 1 to force config choices (works with SKIPCONFIRM=1)
+# Set to 1 to force inteactive config installer
 SPD_CONFIG=0
 # Set to 1 to force uninstall (also works with SKIPCONFIRM=1)
 UNINSTALL=0
@@ -136,28 +137,29 @@ show_message_OK()
     return
   fi
 }
+# Shotrhand for location of additionalApps.json
+ADDITIONAL_APPS_JSON="/jci/opera/opera_dir/userjs/additionalApps.json"
 add_app_json()
-# script by vic_bam85
 {
   # check if entry in additionalApps.json still exists, if so nothing is to do
-  count=$(grep -c '{ "name": "'"${1}"'"' /jci/opera/opera_dir/userjs/additionalApps.json)
-  if [ "$count" = "0" ]
+  count=$(grep -c '{ "name": "'"${1}"'"' ${ADDITIONAL_APPS_JSON})
+  if [ $count -eq 0 ]
   then
     log_message "===  ${2:0:10} not found in additionalApps.json, first installation  ==="
-    mv /jci/opera/opera_dir/userjs/additionalApps.json /jci/opera/opera_dir/userjs/additionalApps.json.old
+    mv ${ADDITIONAL_APPS_JSON} ${ADDITIONAL_APPS_JSON}.old
     sleep 2
     # delete last line with "]" from additionalApps.json
-    grep -v "]" /jci/opera/opera_dir/userjs/additionalApps.json.old > /jci/opera/opera_dir/userjs/additionalApps.json
+    grep -v "]" ${ADDITIONAL_APPS_JSON}.old > ${ADDITIONAL_APPS_JSON}
     sleep 2
-    cp /jci/opera/opera_dir/userjs/additionalApps.json "${MYDIR}/bakups/test/additionalApps${1}-2._delete_last_line.json"
+    cp ${ADDITIONAL_APPS_JSON} "${MYDIR}/bakups/test/additionalApps${1}-2._delete_last_line.json"
     # check, if other entrys exists
-    count=$(grep -c '}' /jci/opera/opera_dir/userjs/additionalApps.json)
-    if [ "$count" != "0" ]
+    count=$(grep -c '}' ${ADDITIONAL_APPS_JSON})
+    if [ $count -ne 0 ]
     then
       # if so, add "," to the end of last line to additionalApps.json
-      echo "$(cat /jci/opera/opera_dir/userjs/additionalApps.json)", > /jci/opera/opera_dir/userjs/additionalApps.json
+      echo "$(cat ${ADDITIONAL_APPS_JSON})", > ${ADDITIONAL_APPS_JSON}
       sleep 2
-      cp /jci/opera/opera_dir/userjs/additionalApps.json "${MYDIR}/bakups/test/additionalApps${1}-3._add_comma_to_last_line.json"
+      cp ${ADDITIONAL_APPS_JSON} "${MYDIR}/bakups/test/additionalApps${1}-3._add_comma_to_last_line.json"
       log_message "===           Found existing entrys in additionalApps.json            ==="
     fi
     # add app entry and "]" again to last line of additionalApps.json
@@ -168,66 +170,65 @@ add_app_json()
     then
       sed -i 's/"label": "'"${2}"'" \}/"label": "'"${2}"'", "preload": "'"${3}"'" \}/g' /jci/opera/opera_dir/userjs/additionalApps.json
     fi
-    cp /jci/opera/opera_dir/userjs/additionalApps.json "${MYDIR}/bakups/test/additionalApps${1}-4._add_entry_to_last_line.json"
-    echo "]" >> /jci/opera/opera_dir/userjs/additionalApps.json
+    cp ${ADDITIONAL_APPS_JSON} "${MYDIR}/bakups/test/additionalApps${1}-4._add_entry_to_last_line.json"
+    echo "]" >> ${ADDITIONAL_APPS_JSON}
     sleep 2
-    cp /jci/opera/opera_dir/userjs/additionalApps.json "${MYDIR}/bakups/test/additionalApps${1}-5._after.json"
-    rm -f /jci/opera/opera_dir/userjs/additionalApps.json.old
+    rm -f ${ADDITIONAL_APPS_JSON}.old
   else
     log_message "===         ${2:0:10} already exists in additionalApps.json          ==="
   fi
+  cp ${ADDITIONAL_APPS_JSON} "${MYDIR}/bakups/test/additionalApps${1}-5._after.json"
   if [ -e /jci/opera/opera_dir/userjs/nativeApps.js ]
   then
-    echo "additionalApps = $(cat /jci/opera/opera_dir/userjs/additionalApps.json)" > /jci/opera/opera_dir/userjs/nativeApps.js
+    echo "additionalApps = $(cat ${ADDITIONAL_APPS_JSON})" > /jci/opera/opera_dir/userjs/nativeApps.js
     log_message "===                    Updated nativeApps.js                          ==="
   fi
 }
 remove_app_json()
-# script by vic_bam85
 {
-  unix2dos /jci/opera/opera_dir/userjs/additionalApps.json
   # check if app entry in additionalApps.json still exists, if so, then it will be deleted
-  count=$(grep -c '{ "name": "'"${1}"'"' /jci/opera/opera_dir/userjs/additionalApps.json)
+  count=$(grep -c '{ "name": "'"${1}"'"' ${ADDITIONAL_APPS_JSON})
   if [ "$count" -gt "0" ]
   then
     log_message "====   Remove ${count} entry(s) of ${1:0:10} found in additionalApps.json   ==="
-    mv /jci/opera/opera_dir/userjs/additionalApps.json /jci/opera/opera_dir/userjs/additionalApps.json.old
+    mv ${ADDITIONAL_APPS_JSON} ${ADDITIONAL_APPS_JSON}.old
     # delete last line with "]" from additionalApps.json
-    grep -v "]" /jci/opera/opera_dir/userjs/additionalApps.json.old > /jci/opera/opera_dir/userjs/additionalApps.json
+    grep -v "]" ${ADDITIONAL_APPS_JSON}.old > ${ADDITIONAL_APPS_JSON}
     sleep 2
-    cp /jci/opera/opera_dir/userjs/additionalApps.json "${MYDIR}/bakups/test/additionalApps${1}-2._delete_last_line.json"
+    cp ${ADDITIONAL_APPS_JSON} "${MYDIR}/bakups/test/additionalApps${1}-2._delete_last_line.json"
     # delete all app entrys from additionalApps.json
-    sed -i "/${1}/d" /jci/opera/opera_dir/userjs/additionalApps.json
+    sed -i "/${1}/d" ${ADDITIONAL_APPS_JSON}
     sleep 2
-    json="$(cat /jci/opera/opera_dir/userjs/additionalApps.json)"
+    json="$(cat ${ADDITIONAL_APPS_JSON})"
     # check if last sign is comma
     rownend=$(echo -n $json | tail -c 1)
-    if [ "$rownend" = "," ]
+    if [ "$rownend" == "," ]
     then
       # if so, remove "," from back end
-      echo ${json%,*} > /jci/opera/opera_dir/userjs/additionalApps.json
+      echo ${json%,*} > ${ADDITIONAL_APPS_JSON}
       sleep 2
       log_message "===  Found comma at last line of additionalApps.json and deleted it   ==="
     fi
-    cp /jci/opera/opera_dir/userjs/additionalApps.json "${MYDIR}/bakups/test/additionalApps${1}-3._delete_app_entry.json"
+    cp ${ADDITIONAL_APPS_JSON} "${MYDIR}/bakups/test/additionalApps${1}-3._delete_app_entry.json"
     # add "]" again to last line of additionalApps.json
-    echo "]" >> /jci/opera/opera_dir/userjs/additionalApps.json
+    echo "]" >> ${ADDITIONAL_APPS_JSON}
     sleep 2
-    first=$(head -c 1 /jci/opera/opera_dir/userjs/additionalApps.json)
-    if [ $first != "[" ]
+    first=$(head -c 1 ${ADDITIONAL_APPS_JSON})
+    if [ "$first" != "[" ]
     then
-      sed -i "1s/^/[\n/" /jci/opera/opera_dir/userjs/additionalApps.json
+      sed -i '1s/^/[\n/' ${ADDITIONAL_APPS_JSON}
       log_message "===             Fixed first line of additionalApps.json               ==="
+    else
+      sed -i '1s/\[/\[\n/' ${ADDITIONAL_APPS_JSON}
     fi
-    rm -f /jci/opera/opera_dir/userjs/additionalApps.json.old
-    cp /jci/opera/opera_dir/userjs/additionalApps.json "${MYDIR}/bakups/test/additionalApps${1}-4._after.json"
+    rm -f ${ADDITIONAL_APPS_JSON}.old
   else
-    log_message "===            ${1:0:10} not found in additionalApps.json            ==="
+    log_message "===            ${1:1:10} not found in additionalApps.json            ==="
   fi
-  dos2unix /jci/opera/opera_dir/userjs/additionalApps.json
+  cp ${ADDITIONAL_APPS_JSON} "${MYDIR}/bakups/test/additionalApps${1}-4._after.json"
   if [ -e /jci/opera/opera_dir/userjs/nativeApps.js ]
   then
-    echo "additionalApps = $(cat /jci/opera/opera_dir/userjs/additionalApps.json)" > /jci/opera/opera_dir/userjs/nativeApps.js
+    echo "additionalApps = $(cat ${ADDITIONAL_APPS_JSON})" > /jci/opera/opera_dir/userjs/nativeApps.js
     log_message "===                    Updated nativeApps.js                          ==="
   fi
 }
@@ -552,7 +553,7 @@ speedo_install()
 {
   if [ $UNINSTALL -eq 0 ]
   then
-    cp -a ${MYDIR}/config/speedometer/jci/gui/apps/* /jci/gui/apps/
+    cp -a ${MYDIR}/config/jci/gui/apps/* /jci/gui/apps/
     log_message "===             Copied folder /jci/gui/apps/_speedometer              ==="
     find /jci/gui/apps/_*/ -type f -name '*.js' -exec chmod 755 {} \;
     find /jci/gui/apps/_*/ -type f -name '*.sh' -exec chmod 755 {} \;
@@ -594,7 +595,7 @@ speedo_install()
     if [ $CASDK_MODE -eq 0 ]
     then
       log_message "===           No additionalApps.js available, will copy one           ==="
-      cp -a ${MYDIR}/config/jci/opera/opera_dir/userjs/additionalApps.js /jci/opera/opera_dir/userjs/ && CASDK_MODE=1
+      cp -a ${MYDIR}/config/jci/opera/opera_dir/userjs/*.js /jci/opera/opera_dir/userjs/ && CASDK_MODE=1
       find /jci/opera/opera_dir/userjs/ -type f -name '*.js' -exec chmod 755 {} \;
     fi
 
@@ -607,18 +608,17 @@ speedo_install()
       log_message "===                   Created additionalApps.json                     ==="
     fi
 
+    # Remove old json entries
+    if ! grep -Fq "speedometer-startup.js" /jci/opera/opera_dir/userjs/additionalApps.json
+    then
+      remove_app_json "_speedometer"
+    fi
+
     # call function add_app_json to modify additionalApps.json
     add_app_json "_speedometer" "Speedometer" "speedometer-startup.js"
 
-    # add preload to the AA json entry if needed
-    if ! grep -q "speedometer-startup.js" /jci/opera/opera_dir/userjs/additionalApps.json
-    then
-      sed -i 's/"label": "Speedometer" \}/"label": "Speedometer", "preload": "speedometer-startup.js" \}/g' /jci/opera/opera_dir/userjs/additionalApps.json
-      log_message "===     Added speedometer-startup.js to speedometer json entry        ==="
-    fi
-
     # change compass rotating depending on NAV SD card inside or not
-    if [ ! -d /mnt/sd_nav/content/speedcam ] || [ ${COMPAT_GROUP} -ne 1  ]
+    if [ ! -d /mnt/sd_nav/content/speedcam ] || [ $COMPAT_GROUP -ne 1  ]
     then
       sed -i 's/var noNavSD = false;/var noNavSD = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
       log_message "===    Changed compass rotating, because no NAV SD card is inside     ==="
@@ -716,7 +716,7 @@ speedo_install()
       #fi
     fi
 
-    show_message "INSTALLING MODS ...."
+    show_message "INSTALLING SPEEDOMETER ...."
 
     if [ -e ${MYDIR}/config/speedometer-config.js ]
     then
@@ -729,6 +729,11 @@ speedo_install()
     else
       log_message "===       NO 'speedometer-config.js' FILE FOUND... USING DEFAULT      ==="
     fi
+    cp -a ${MYDIR}/config/speedometer-controls.js /jci/gui/apps/_speedometer/js
+    log_message "===                Copied Speedometer Controls File                   ==="
+    cat ${MYDIR}/config/barThemes.css > /jci/gui/apps/_speedometer/css/_speedometerApp.css
+    log_message "===                 Copied Bar Speedometer Themes                     ==="
+
     chmod -R 755 /jci/gui/apps/_speedometer/
 
     log_message " "
@@ -760,7 +765,7 @@ end_install()
 }
 # END INSTALLATION FUNCTIONS
 
-## RUN INSTALLATION FUNCTIONS
+## RUN INSTALLATION
 start_install
 
 preinstall_ops

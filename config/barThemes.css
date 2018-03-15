@@ -1,0 +1,65 @@
+/* barThemes.css - Customize Bar Speedometer Color Themes
+* Any Valid CSS Colors Can Be Used Examples:
+* Names -    Ex: blue;
+* Hex -      Ex: #00ff66;
+* RGB -      Ex: rgb(100, 255, 0);
+* HSL -      Ex: hsl(248, 53%, 58%);
+* For More Info On CSS Colors Visit https://www.w3schools.com/colors/colors_names.asp
+* Each Theme Has 3 Colors In This Order:
+* Primary - Color of Values
+* Secondary - Color of Labels/Units
+* Border-Color - Color of the Box Borders
+* If you know CSS then have fun with it
+* CSS is a very forgiving language any errors in this file will be ignored
+*/
+
+/* Theme #1 */
+
+#speedBarContainer.theme1 #vehdataMainDiv fieldset div, #speedBarContainer.theme1 #vehdataMainDiv [class*="vehDataMain"].pos0 div {
+  /* Primary */
+  color: aquamarine;
+}
+#speedBarContainer.theme1 #vehdataMainDiv [class*="vehDataMain"].pos0 legend .spunit span, #speedBarContainer.theme1 #vehdataMainDiv fieldset {
+  /* Secondary */
+  color: #64bfff;
+  /* Border-Color */
+  border-color: blue;
+}
+/* Theme #2 */
+
+#speedBarContainer.theme2 #vehdataMainDiv fieldset div, #speedBarContainer.theme2 #vehdataMainDiv [class*="vehDataMain"].pos0 div {
+  color: #3fff17;
+}
+#speedBarContainer.theme2 #vehdataMainDiv [class*="vehDataMain"].pos0 legend .spunit span, #speedBarContainer.theme2 #vehdataMainDiv fieldset {
+  color: #ff8181;
+  border-color: #ffca00;
+}
+/* Theme #3 */
+
+#speedBarContainer.theme3 #vehdataMainDiv fieldset div, #speedBarContainer.theme3 #vehdataMainDiv [class*="vehDataMain"].pos0 div {
+  color: rgb(237, 75, 255);
+}
+#speedBarContainer.theme3 #vehdataMainDiv [class*="vehDataMain"].pos0 legend .spunit span, #speedBarContainer.theme3 #vehdataMainDiv fieldset {
+  color: #52ff5a;
+  border-color: #e4c300;
+}
+/* Theme #4 */
+
+#speedBarContainer.theme4 #vehdataMainDiv fieldset div, #speedBarContainer.theme4 #vehdataMainDiv [class*="vehDataMain"].pos0 div {
+  color: hsl(258, 100%, 75%);
+}
+#speedBarContainer.theme4 #vehdataMainDiv [class*="vehDataMain"].pos0 legend .spunit span, #speedBarContainer.theme4 #vehdataMainDiv fieldset {
+  color: hsl(292, 100%, 61%);
+  border-color: hsl(199, 80%, 40%);
+  /* Theme Tweak: Rounded Boxes*/
+  border-radius: 25px;
+}
+/* Theme #5 */
+
+#speedBarContainer.theme5 #vehdataMainDiv fieldset div, #speedBarContainer.theme5 #vehdataMainDiv [class*="vehDataMain"].pos0 div {
+  color: #FF0000;
+}
+#speedBarContainer.theme5 #vehdataMainDiv [class*="vehDataMain"].pos0 legend .spunit span, #speedBarContainer.theme5 #vehdataMainDiv fieldset {
+  color: transparent;
+  border-color: transparent;
+}

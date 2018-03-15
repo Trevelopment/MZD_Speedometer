@@ -1,6 +1,6 @@
 # MZD_Speedometer v5
 
-[Changelog](https://github.com/Trevelopment/MZD_Speedometer/changelog.md "changelog")
+[Changelog](changelog.md "changelog")
 
 ### A Versatile Speedometer App For The MZD Infotainment System
 

@@ -93,6 +93,7 @@ function SpeedBarTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '			<div class="speedBar_5"></div>' +
     '		</div>' +
     '		<div id="vehdataMainDiv">' +
+    '		<div id="barlayout">' +
     '			<!--div class="phile"></div-->' +
     '			<fieldset id="speedCurrentFieldSet" class="' +
     ((spdTbl.vehSpeed[0] === 0) ? "vehDataMain" : "vehDataBar" + spdTbl.vehSpeed[1]) + " pos" + spdTbl.vehSpeed[2] + '">' +
@@ -201,10 +202,10 @@ function SpeedBarTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '     </fieldset>' +
     '     <fieldset id="fuelGaugeFieldSet" class="' +
     ((spdTbl.fuelLvl[0] === 0) ? "vehDataMain" : "vehDataBar" + spdTbl.fuelLvl[1]) + " pos" + spdTbl.fuelLvl[2] + '">' +
-    '       <legend class="vehDataLegends">Fuel Gauge</legend>' +
+    '       <legend class="vehDataLegends">Fuel Gauge <span class="spunit">(<span class="fuelUnit"></span>)</span></legend>' +
     '       <div class="fuelGaugeValue">---</div>' +
     '     </fieldset>' +
-    '     <fieldset id="engineIdleTimeFieldSet" class="' +
+    '     <fieldset id="engIdleTimeFieldSet" class="' +
     ((spdTbl.trpEngIdle[0] === 0) ? "vehDataMain" : "vehDataBar" + spdTbl.trpEngIdle[1]) + " pos" + spdTbl.trpEngIdle[2] + '">' +
     '       <legend class="vehDataLegends">Engine Idle</legend>' +
     '       <div class="engineIdleTimeValue">0:00</div>' +
@@ -224,6 +225,7 @@ function SpeedBarTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '       <legend class="vehDataLegends">Eng Load</legend>' +
     '       <div class="engineLoadValue">0</div>' +
     '     </fieldset>' +
+    '		</div>' +
     '		</div>' +
     '		</div>' +
     '	' +
@@ -328,6 +330,9 @@ SpeedBarTmplt.prototype.handleControllerEvent = function(eventID) {
  */
 SpeedBarTmplt.prototype.cleanUp = function() {
   swapOut = null;
+  if (framework.getCurrentApp() !== "_speedometer") {
+    $('#SbSpeedo, #Sbfuel-bar-wrapper').fadeIn();
+  }
 };
 
 framework.registerTmpltLoaded("SpeedBarTmplt");

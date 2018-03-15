@@ -36,6 +36,7 @@ var lastGearPositionValue = "---";
 var lastGearLeverPositionValue = "---";
 var fuelGaugeMax = 184;
 var lastFuelGaugeValue = 0;
+var lastFuelGaugePercent = 0;
 var BatSOC = 0;
 var BatSOCmax = 200;
 var lastEngineLoadValue = 0;
@@ -44,7 +45,9 @@ var currDataBar = 1;
 var backgroundColor = '';
 var automaticTrans = false;
 var speedometerLonghold = false;
+var hideSpeedFuel = false;
 var speedometerLayout = null;
+var speedoClassicLayout = null;
 
 $.ajax({
   url: 'addon-common/cufon-yui.js',
@@ -737,12 +740,28 @@ $(document).ready(function() {
     fuelGaugeVal = $.trim(fuelGaugeVal);
     if ($.isNumeric(fuelGaugeVal)) {
       if (fuelGaugeVal > fuelGaugeMax) {
-        fuelGaugeMax = fuelGaugeVal;
+        fuelGaugeMax = Math.ceil(fuelGaugeVal);
       }
-      lastFuelGaugeValue = Math.round((fuelGaugeVal / fuelGaugeMax) * fuelGaugeFactor);
-      $('.fuelGaugeValue').html(lastFuelGaugeValue + fuelGaugeValueSuffix);
+      var nextFuelPer = Math.round((fuelGaugeVal / fuelGaugeMax) * 100);
+      lastFuelGaugePercent = Math.abs(lastFuelGaugePercent - nextFuelPer) < 3 || lastFuelGaugePercent === 0 ? nextFuelPer : (nextFuelPer < lastFuelGaugePercent ? lastFuelGaugePercent - 3 : lastFuelGaugePercent + 3);;
+      lastFuelGaugeValue = parseFloat((Math.round((fuelGaugeFactor / 10) * lastFuelGaugePercent) / 10).toFixed(1));
+      $('.fuelGaugeValue').html(lastFuelGaugeValue + (fuelGaugeValueSuffix === "%" ? "%" : ""));
+      $('.fuel-bar').css('width', lastFuelGaugePercent + "%");
+      if (lastFuelGaugePercent > 80) {
+        $('.fuel-bar').css('background-color', fuelBarColor_80to100);
+      } else if (lastFuelGaugePercent > 60) {
+        $('.fuel-bar').css('background-color', fuelBarColor_60to80);
+      } else if (lastFuelGaugePercent > 40) {
+        $('.fuel-bar').css('background-color', fuelBarColor_40to60);
+      } else if (lastFuelGaugePercent > 20) {
+        $('.fuel-bar').css('background-color', fuelBarColor_20to40);
+      } else {
+        $('.fuel-bar').css('background-color', fuelBarColor_0to20);
+      }
     }
   }
+
+
   // --------------------------------------------------------------------------
   // Update Battery Charge
   // --------------------------------------------------------------------------
@@ -790,18 +809,20 @@ $(document).ready(function() {
       }
     }
   }, 1000);
-  setInterval(function() {
-    var sbSpeedoVal1 = (sbTemp) ? $('#SbSpeedo .outsideTempValue') : $('#SbSpeedo .gpsHeading');
-    var sbSpeedoVal2 = (sbTemp) ? $('#SbSpeedo .Drv1AvlFuelEValue') : $('#SbSpeedo .gpsAltitudeValue');
-    if ((enableSmallSbSpeedo) && (!$('#SbSpeedo').hasClass('parking'))) {
-      sbSpeedoVal1.fadeOut();
-      sbSpeedoVal2.fadeIn();
-      setTimeout(function() {
-        sbSpeedoVal2.fadeOut();
-        sbSpeedoVal1.fadeIn();
-      }, 2000);
-    }
-  }, 4000);
+  if (SbVal1 !== 'hidden' && SbVal2 !== 'hidden') {
+    setInterval(function() {
+      var sbSpeedoVal1 = $('#SbSpeedo .' + SbVal1);
+      var sbSpeedoVal2 = $('#SbSpeedo .' + SbVal2);
+      if ((enableSmallSbSpeedo) && (!$('#SbSpeedo').hasClass('parking'))) {
+        sbSpeedoVal1.fadeOut();
+        sbSpeedoVal2.fadeIn();
+        setTimeout(function() {
+          sbSpeedoVal2.fadeOut();
+          sbSpeedoVal1.fadeIn();
+        }, sbInterval);
+      }
+    }, sbInterval * 2);
+  }
 
   function updateSpeedBar(speed) {
     if (barSpeedometerMod) {
@@ -999,12 +1020,25 @@ function LoadSpeedoTemplate() {
     $.getScript('apps/_speedometer/js/speedometer-config.js', function(data) {
       $('body').prepend("<script>" + data + "</script>");
       SpeedometerOverRide(overRideSpeed);
+      classicSpeedoTmplt.sort(function(a, b) {
+        return a.pos - b.pos
+      })
     });
   }
 }
 
+function SaveSpeedoClassicLayout() {
+  speedoClassicLayout = DOMtoJSON(document.getElementById('valuetable'));
+}
+
 function SaveSpeedBarLayout() {
-  speedometerLayout = DOMtoJSON(document.getElementById('vehdataMainDiv'));
+  speedometerLayout = DOMtoJSON(document.getElementById('barlayout'));
+}
+
+function LoadSpeedoClassicLayout() {
+  if (speedoClassicLayout !== null) {
+    $('#table_bg').html(JSONtoDOM(speedoClassicLayout));
+  }
 }
 
 function LoadSpeedBarLayout() {
@@ -1019,8 +1053,7 @@ function ClearSpeedBarLayout() {
     $('.activeDataBar').removeClass('activeDataBar');
     AIO_SBN("Layout Reset", "apps/_speedometer/IcnSbnSpeedometer.png");
     aioMagicRoute("_speedometer", "Start");
-  } else {
-    AIO_SBN("Layout Already Default", "apps/_speedometer/IcnSbnSpeedometer.png");
   }
 }
+
 utility.loadScript('apps/_speedometer/js/speedometerUpdate.js')

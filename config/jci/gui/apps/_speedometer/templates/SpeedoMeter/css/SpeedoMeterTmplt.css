@@ -199,6 +199,11 @@
   font-size: 12px;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
+#speedometerContainer #valuetable .speedUnit {
+  position: inherit;
+  font-size: 16px;
+  color: inherit;
+}
 #speedometerContainer #gpsCompass * {
   position: absolute;
   width: 24px;
@@ -289,7 +294,11 @@
   padding: 0px;
 }
 #speedometerContainer fieldset legend span {
-  font-size: 16px;
+  font-size: 14px;
+}
+#speedometerContainer fieldset legend span.fuelEffUnit {
+    margin-left: -4px;
+    font-size: 20px;
 }
 #speedometerContainer fieldset div {
   color: #EEEEEE;
@@ -297,8 +306,8 @@
   font-size: 24px;
 }
 #speedometerContainer #gpsAltitudeFieldSet {
-  border-color: transparent;
-  padding-bottom: 0px;
+  /*border-color: transparent;
+  padding-bottom: 0px;*/
 }
 #speedometerContainer #gpsLatitudeFieldSet div.lat_n {
   padding-right: 17px;
@@ -506,28 +515,27 @@
 #speedometerContainer #rpmDial .scale {
   left: 197px;
 }
-/* end org */
-
-#speedometerContainer .alt0 #outsideTempFieldSet, #speedometerContainer .alt0 #intakeTempFieldSet, #speedometerContainer .alt0 #coolantTempFieldSet, #speedometerContainer .alt0 #gearPositionFieldSet {
-  display: block;
-}
-#speedometerContainer .alt0 #Drv1AvlFuelEFieldSet, #speedometerContainer .alt0 #tripTimeFieldSet, #speedometerContainer .alt0 #idleTimeFieldSet, #speedometerContainer .alt0 #engIdleTimeFieldSet {
-  display: none;
-}
 /* For Resize Mods */
 
-#speedometerContainer .alt1 fieldset legend {
-  font-size: 24px;
-}
-#speedometerContainer .alt1 fieldset legend span {
-  font-size: 18px;
+#speedometerContainer .alt1 fieldset {
+  height: 37px;
 }
 #speedometerContainer .alt1 fieldset div {
   font-weight: 700;
   font-size: 30px;
+  white-space: nowrap;
 }
-#speedometerContainer .alt1 #intakeTempFieldSet, #speedometerContainer .alt1 #coolantTempFieldSet, #speedometerContainer .alt1 #idleTimeFieldSet, #speedometerContainer .alt1 #engIdleTimeFieldSet {
-  display: none;
+#speedometerContainer .alt1 fieldset legend span {
+  font-size: 16x;
+}
+#speedometerContainer .alt1 fieldset legend span.fuelEffUnit {
+  font-size: 20px;
+  margin-left: -6px;
+  font-weight: normal;
+}
+#speedometerContainer .alt1 fieldset#Drv1AvlFuelEFieldSet .spunit span, #speedometerContainer .alt1 fieldset legend,
+#speedometerContainer .alt1 fieldset div.gpsAltitudeMinMax {
+  font-size: 25px;
 }
 #speedometerContainer.Red+#digital .pos0 legend .spunit span, #speedometerContainer.Red+#digital .pos0 div {
   color: Red;
@@ -536,7 +544,7 @@
   color: Orange;
 }
 #speedometerContainer.Purple+#digital .pos0 legend .spunit span, #speedometerContainer.Purple+#digital .pos0 div {
-  color: RebeccaPurple;
+  color: Purple;
 }
 #speedometerContainer.Silver+#digital .pos0 legend .spunit span, #speedometerContainer.Silver+#digital .pos0 div {
   color: White;
@@ -552,4 +560,26 @@
 }
 #speedometerContainer.Yellow+#digital .pos0 legend .spunit span, #speedometerContainer.Yellow+#digital .pos0 div {
   color: Yellow;
+}
+#speedo-fuel-bar-wrapper {
+  position: fixed;
+  width: 320px;
+  top: 410px;
+  left: 30px;
+  height: 30px;
+}
+#speedo-fuel-bar-container {
+  padding: 4px;
+}
+#speedo-fuel-bar {
+  height: 30px;
+}
+#speedometerContainer fieldset .hideFuel {
+  display: none;
+}
+#speedometerContainer fieldset#Drv1AvlFuelEFieldSet .spunit {
+  visibility: hidden;
+}
+#speedometerContainer fieldset#Drv1AvlFuelEFieldSet .spunit span {
+  visibility: visible;
 }

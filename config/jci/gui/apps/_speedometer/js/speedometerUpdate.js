@@ -4,32 +4,32 @@ function updateSpeedoApp() {
   for (var i = 5; i > spdBottomRows; i--) {
     $('.vehDataBar' + i).remove();
   }
-  if (enableSmallSbSpeedo) {
-    $('#SbSpeedo').fadeIn();
-  }
   $('#speedometerContainer').addClass(analogColor);
   // *********************************************************************************************
-  // Set Multicontroller Toggle Buttons
+  // Set Multicontroller Toggle Actions
   // *********************************************************************************************
   if (barSpeedometerMod) {
     var rows = (typeof spdBottomRows === "undefined") ? 3 : spdBottomRows;
+    // Toggle Next Botom Row. Default: Select
+    // --------------------------------------------------------------------------
     $('.spdBtn0').click(function() {
       (currDataBar > rows - 1) ? currDataBar = 1: ++currDataBar;
       $('[class*="vehDataBar"]').removeClass('activeDataBar');
       $('.vehDataBar' + currDataBar).addClass('activeDataBar');
     });
+    // Default: Up
     $('.spdBtn2').click(function() {
       engineSpeedBar = !engineSpeedBar;
-      AIO_SBN("Speed Bar: " + (engineSpeedBar ? $('#engineSpeedFieldSet legend').text() : $('#speedCurrentFieldSet legend').text()), "apps/_speedometer/IcnSbnSpeedometer.png");
+      AIO_SBN(SPDSBN_Speed_Bar + ": " + (engineSpeedBar ? $('#engineSpeedFieldSet legend').text() : $('#speedCurrentFieldSet legend').text()), "apps/_speedometer/IcnSbnSpeedometer.png");
     });
     $('.spdBtn5').click(ClearSpeedBarLayout);
     $('.spdBtn6').click(function() {
-      AIO_SBN("Classic Speedometer", "apps/_speedometer/templates/SpeedoMeter/images/speed.png");
+      AIO_SBN(SPDSBN_Classic_Speedometer, "apps/_speedometer/templates/SpeedoMeter/images/speed.png");
       aioMagicRoute("_speedometer", "SpeedClassic");
     });
     $('.spdBtn7').click(function() {
       $('[class^=speedBar]').toggle();
-      AIO_SBN(($('.speedBar_5').css('display').indexOf('none') !== -1 ? "Hide" : "Show") + " Speed Bar", "apps/_speedometer/IcnSbnSpeedometer.png");
+      AIO_SBN(($('.speedBar_5').css('display').indexOf('none') !== -1 ? SPDSBN_Hide_Speed_Bar : SPDSBN_Show_Speed_Bar), "apps/_speedometer/IcnSbnSpeedometer.png");
     });
     if (hideSpeedBar) {
       $('[class^=speedBar]').toggle();
@@ -37,6 +37,9 @@ function updateSpeedoApp() {
     $('.spdBtn9').click(cycleColorThemes);
     $('#speedBarContainer').addClass('theme' + speedometerTheme);
   } else if (speedMod) {
+    // touch to pop top value
+    // --------------------------------------------------------------------------
+    $('#valuetable fieldset:first-child').click(function() { $('.spdBtn5').click() })
     // touch to toggle Analog / Digital
     // --------------------------------------------------------------------------
     $('.spdBtn0').click(function() {
@@ -49,24 +52,32 @@ function updateSpeedoApp() {
         $('#analog').show();
         startAnalog = true;
       }
-      AIO_SBN("Speed: " + (startAnalog ? "Analog" : "Digital"), "apps/_speedometer/templates/SpeedoMeter/images/digital.png");
+      AIO_SBN((startAnalog ? SPDSBN_Speed_Analog : SPDSBN_Speed_Digital), "apps/_speedometer/templates/SpeedoMeter/images/digital.png");
+    })
+    $('#digital, #analog').click(function() {
+      $('.spdBtn0').click();
     })
     // Hide Idle Values and enlarge the fonts of the other values
     // --------------------------------------------------------------------------
     $('.spdBtn2').click(function() {
       $('#valuetable').toggleClass('alt1');
-      AIO_SBN("Text Size: " + ($('#valutable').hasClass('alt1') ? "Large" : "Regular"), "apps/_speedometer/templates/SpeedoMeter/images/digital.png");
+      spdLrgTxt = $('#valuetable').hasClass('alt1');
+      AIO_SBN((spdLrgTxt ? SPDSBN_Text_Large : SPDSBN_Text_Regular), "apps/_speedometer/templates/SpeedoMeter/images/digital.png");
     });
-    // Show alternate values
+    // Pop Top Value
     // --------------------------------------------------------------------------
     $('.spdBtn5').click(function() {
-      $('#valuetable').toggleClass('alt0');
-      AIO_SBN("Alternate Values: " + ($('#valutable').hasClass('alt0') ? "Temp & Gear Pos" : "Times & Fuel Eff"), "apps/_speedometer/templates/SpeedoMeter/images/digital.png");
+      var pop = $('#valuetable fieldset:first-child legend').text();
+      $('#valuetable').append($('#valuetable fieldset:first-child'));
+      $('#valuetable fieldset').off('click');
+      $('#valuetable fieldset:first-child').click(function() { $('.spdBtn5').click() })
+      AIO_SBN(SPDSBN_Popped + " " + pop, "apps/_speedometer/templates/SpeedoMeter/images/digital.png");
+      SaveSpeedoClassicLayout();
     });
     // Reset Values to 0  values are updated right away
     // --------------------------------------------------------------------------
     $('.spdBtn6').click(function() {
-      AIO_SBN("Digital Bar Speedometer", "apps/_speedometer/templates/SpeedoMeter/images/digital.png");
+      AIO_SBN(SPDSBN_Digital_Bar_Speedometer, "apps/_speedometer/templates/SpeedoMeter/images/digital.png");
       aioMagicRoute("_speedometer", "SpeedBar");
     });
     $('.spdBtn7').click(toggleBasicSpeedo);
@@ -82,6 +93,8 @@ function updateSpeedoApp() {
       (isMPH) ? toggleTempUnit(): toggleFuelEffUnit();
       //speedAnimation = !speedAnimation;
     });
+    // Reset Speeds & Times
+    // --------------------------------------------------------------------------
     $('.spdBtn8').click(function() {
       tripDistCurrent = 0;
       prevTripDist = 0;
@@ -101,8 +114,14 @@ function updateSpeedoApp() {
       totalMoveCount = 0;
       engineSpeedCurrent = 0;
       engineSpeedTop = 0;
-      AIO_SBN("Reset Times & Speeds", "apps/_speedometer/IcnSbnSpeedometer.png");
+      AIO_SBN(SPDSBN_Reset_Times_Speeds, "apps/_speedometer/IcnSbnSpeedometer.png");
     });
+    // Toggle StatusBar Speedo (No Default)
+    // --------------------------------------------------------------------------
+    $('.spdBtn10').click(function() {
+      $('.StatusBarCtrlClock').click()
+    })
+    $('.spdBtn11').click(cycleLanguages);
   }
   // Toggle Helper Functions
   // --------------------------------------------------------------------------
@@ -110,14 +129,14 @@ function updateSpeedoApp() {
   function toggleFuelEffUnit() {
     fuelEffunit_kml = !fuelEffunit_kml;
     var effUnit = (fuelEffunit_kml ? 'km/L ∅' : 'L/100 km ∅');
-    AIO_SBN("Fuel Eff Unit: " + effUnit, "apps/_speedometer/IcnSbnSpeedometer.png");
+    AIO_SBN(SPDSBN_Fuel_Eff_Unit + ": " + effUnit, "apps/_speedometer/IcnSbnSpeedometer.png");
     $('legend .fuelEffUnit').html(effUnit);
   }
   // --------------------------------------------------------------------------
   // Toggle Temperature (C & F)
   function toggleTempUnit() {
     tempIsF = !tempIsF;
-    AIO_SBN("Temperature Unit: " + (tempIsF ? "°F" : "°C"), "apps/_speedometer/IcnSbnSpeedometer.png");
+    AIO_SBN(SPDSBN_Temperature_Unit + ": " + (tempIsF ? "°F" : "°C"), "apps/_speedometer/IcnSbnSpeedometer.png");
     if (tempIsF) {
       $('.tempUnit').html('F');
       //$('.intakeTempValue').html(C_2_F(intakeTemp)+'&deg;');
@@ -141,7 +160,7 @@ function updateSpeedoApp() {
   // -------------------------------------------------------------------------
   // Toggle kmh / MPH
   function ToggleSpeedoType() {
-    AIO_SBN("Speed Unit: " + (isMPH ? "KM/H" : "MPH"), "apps/_speedometer/IcnSbnSpeedometer.png");
+    AIO_SBN(SPDSBN_Speed_Unit + ": " + (isMPH ? "KM/H" : "MPH"), "apps/_speedometer/IcnSbnSpeedometer.png");
     if (isMPH) {
       isMPH = false;
       speedSumTotal = Math.round(speedSumTotal * 1.609344);
@@ -216,19 +235,19 @@ function updateSpeedoApp() {
   function toggleSpeedometerBackground() {
     if (original_background_image) {
       $('#speedometerContainer, #speedBarContainer').css("background-image", "");
-      AIO_SBN("Hide Speedometer Background", "apps/_speedometer/IcnSbnSpeedometer.png");
+      AIO_SBN(SPDSBN_Hide_Speedometer_Background, "apps/_speedometer/IcnSbnSpeedometer.png");
       // } else if ($('#speedometerContainer, #speedBarContainer').css('background-image').indexOf('speedometer_background') !== -1) { // add .png to above conditional
       // $('#speedometerContainer, #speedBarContainer').css("background-image","url(apps/_speedometer/templates/SpeedoMeter/images/speedometer_background.png)");
-      // AIO_SBN("Show Speedometer Background", "apps/_speedometer/IcnSbnSpeedometer.png");
+      // AIO_SBN(SPDSBN_Show_Speedometer_Background, "apps/_speedometer/IcnSbnSpeedometer.png"); SPDSBN_Show_Speedometer_Background
     } else {
       $('#speedometerContainer, #speedBarContainer').css("background-image", "url(apps/_speedometer/templates/SpeedoMeter/images/speedometer_background.jpg)");
-      AIO_SBN("Show Speedometer Background", "apps/_speedometer/IcnSbnSpeedometer.png");
+      AIO_SBN(SPDSBN_Show_Speedometer_Background, "apps/_speedometer/IcnSbnSpeedometer.png");
     }
     original_background_image = !original_background_image;
   }
 
   function toggleBasicSpeedo() {
-    AIO_SBN((speedMod ? "Basic" : "Modded") + " Speedometer", (speedMod ? "apps/_speedometer/templates/SpeedoMeter/images/speed.png" : "apps/_speedometer/templates/SpeedoMeter/images/digital.png"));
+    AIO_SBN((speedMod ? SPDSBN_Basic : SPDSBN_Modded), (speedMod ? "apps/_speedometer/templates/SpeedoMeter/images/speed.png" : "apps/_speedometer/templates/SpeedoMeter/images/digital.png"));
     speedMod = !speedMod;
     updateSpeedoApp();
   }
@@ -238,16 +257,24 @@ function updateSpeedoApp() {
     (speedometerTheme >= barThemes.length - 1) ? speedometerTheme = 0: speedometerTheme++;
     $('#speedBarContainer').removeClass("theme" + barThemes.join(" theme"));
     $('#speedBarContainer').addClass("theme" + speedometerTheme);
-    AIO_SBN("Theme #" + speedometerTheme, "apps/_speedometer/IcnSbnSpeedometer.png");
+    AIO_SBN(SPDSBN_Theme + " #" + speedometerTheme, "apps/_speedometer/IcnSbnSpeedometer.png");
   }
 
   function cycleAnalogThemes() {
     var analColors = ["Red", "Green", "Blue", "Orange", "Silver", "Yellow", "Purple", "Pink"];
     var analIndex = analColors.indexOf(analogColor);
-    analogColor = (analIndex >= analColors.length - 1) ? analColors[0] : analColors[analIndex + 1];
+    analogColor = (analIndex >= analColors.length - 1 ? analColors[0] : analColors[analIndex + 1]);
     $('#speedometerContainer').removeClass(analColors.join(" "));
     $('#speedometerContainer').addClass(analogColor);
-    AIO_SBN("Speedometer Color: " + analogColor, "apps/_speedometer/IcnSbnSpeedometer.png");
+    AIO_SBN(SPDSBN_Speedometer_Color + ": " + analogColor, "apps/_speedometer/IcnSbnSpeedometer.png");
+  }
+
+  function cycleLanguages() {
+    var langs = ["EN", "DE", "ES", "PL", "SK", "TR", "FR", "IT", "NL"];
+    var langIndex = langs.indexOf(language);
+    language = (langIndex >= langIndex.length - 1 ? langs[0] : langs[langIndex + 1]);
+    AIO_SBN(SPDSBN_Language + ": " + language, "apps/_speedometer/IcnSbnSpeedometer.png");
+    aioMagicRoute('_speedometer', 'Start')
   }
   // *********************************************************************************************************************
   // Languages
@@ -456,6 +483,42 @@ function updateSpeedoApp() {
     $('#TotAvgFuelFieldSet legend').html('Total <span class="fuelEffUnit"></span>');
     $('#AvgFuelFieldSet legend').html('Avg. <span class="fuelEffUnit"></span>');
   }
+  // Nederlands
+  else if (language === 'NL') {
+    $('#gpsSpeedFieldSet legend').html('GPS Snelheid');
+    $('#tripDistFieldSet legend').html('Dagteller <span class="spunit">(<span class="distUnit">km</span>)</span>');
+    $('#speedTopFieldSet legend').html('Max. Snelheid');
+    $('#speedAvgFieldSet legend').html('Snelheid &empty;');
+    $('#gpsAltitudeFieldSet legend').html('Hoogte <span class="spunit">(<span class="altUnit">m</span>)</span>');
+    $('#gpsAltitudeMinMaxFieldSet legend').html('<span>min/max</span>');
+    $('#gpsLatitudeFieldSet legend').html('Breedte');
+    $('#gpsLongitudeFieldSet legend').html('Lengte');
+    $('#tripTimeFieldSet legend').html('Totale tijd');
+    $('#idleTimeFieldSet legend').html('Gestopt');
+    $('#engIdleTimeFieldSet legend').html('Motor Gestopt');
+    $('#engineSpeedTopFieldSet legend').html('Max. Toeren');
+    $('.NorthEast').html('NO');
+    $('.East').html('O');
+    $('.SouthEast').html('ZO');
+    $('.South').html('Z');
+    $('.SouthWest').html('ZW');
+    $('#rpmDial .unit').text('tpm');
+    $('#gpsSpeedFieldSet legend').html('GPS Snelheid');
+    $('#gpsHeadingFieldSet legend').html('Richting');
+    $('#fuelGaugeFieldSet legend').html('Brandstof');
+    $('#gearPositionFieldSet legend').html('Versnelling');
+    $('#gearLeverPositionFieldSet legend').html('Hendel')
+    $('#engineSpeedFieldSet legend').html('Motortoerental');
+    $('#outsideTempFieldSet legend').html('Buiten <span class="spunit">(&deg;<span class="tempUnit"></span>)</span>');
+    $('#intakeTempFieldSet legend').html('Inlaat <span class="spunit">(&deg;<span class="tempUnit"></span>)</span>');
+    $('#coolantTempFieldSet legend').html('Koelvloeistof <span class="spunit">(&deg;<span class="tempUnit"></span>)</span>');
+    $('#Drv1AvlFuelEFieldSet legend').html('<span class="fuelEffUnit"></span>');
+    $('#TotAvgFuelFieldSet legend').html('Totaal <span class="fuelEffUnit"></span>');
+    $('#AvgFuelFieldSet legend').html('Gem. <span class="fuelEffUnit"></span>');
+    $('#batSOCFieldSet legend').html('Accu Lading'); //Battery State of Charge
+    $('#engLoadFieldSet legend').html('Motor Belasting');
+    $('#speedCurrentFieldSet legend').html('Voertuig Snelh.');
+  }
   // *******************************************************************************************************
   // Starting Values
   // *******************************************************************************************************
@@ -497,7 +560,17 @@ function updateSpeedoApp() {
   } else if (original_background_image) {
     $('#speedometerContainer, #speedBarContainer').css("background-image", "url(apps/_speedometer/templates/SpeedoMeter/images/speedometer_background.jpg)");
   }
+  if (fuelGaugeFactor === undefined) {
+    fuelGaugeFactor = 100;
+    fuelGaugeValueSuffix = "%";
+  }
   // restore values after app restart
+  if (fuelGaugeValueSuffix === "%") {
+    $('#fuelGaugeFieldSet legend .spunit').remove();
+  } else {
+    $('#fuelGaugeFieldSet legend .fuelUnit').text(fuelGaugeValueSuffix);
+  }
+  $('.fuelGaugeValue').html(lastFuelGaugeValue + (fuelGaugeValueSuffix === "%" ? "%" : ""));
   (tempIsF) ? $('.tempUnit').html('F'): $('.tempUnit').html('C');
   $('.tripDistance').html(tripDist);
   $('.speedAvgValue').html(speedAvg);
@@ -506,7 +579,6 @@ function updateSpeedoApp() {
   $('.intakeTempValue').html(intakeTemp);
   $('.outsideTempValue').html(outsideTemp);
   $('.gearPositionValue').html(lastGearPositionValue);
-  $('.fuelGaugeValue').html(lastFuelGaugeValue + "%");
   $('.gearLeverPositionValue').html(lastGearLeverPositionValue);
   $('.gearPositionValue').html(lastGearPositionValue);
   if (altGPSmin != 9999) {
@@ -525,12 +597,16 @@ function updateSpeedoApp() {
     $('.engineIdleTimeValue').html(engONidleTimeValue);
     SpeedoSwapFieldSets();
   } else {
+    $('.fuel-bar').css('width', lastFuelGaugePercent + "%");
     $('.idleTimeValue').html('<span>(' + engONidleTimeValue + ')</span>' + idleTimeValue);
     $('.speedTopValue').html('<span>(' + engineSpeedTop + ')</span>' + speedTop);
     $('.Drv1AvlFuelEValue').html('<span>(' + TotFuelEfficiency + ')</span>' + FuelEfficiency);
     $('.topRPMIndicator').css("transform", "rotate(" + (-145 - engineSpeedTop * 0.01) + "deg)");
     // fix layout if average symbol is used
     $('fieldset legend:contains("∅")').css("margin-top", "2px");
+    if (spdLrgTxt) {
+      $('#valuetable').addClass('alt1');
+    }
     if (startAnalog || !speedMod) {
       $('#analog').show();
       $('#digital').hide();
@@ -539,9 +615,31 @@ function updateSpeedoApp() {
       $('#analog').hide();
     }
     if (!speedMod) {
-      $('#valuetable').removeClass('alt0 alt1');
+      $('#valuetable').removeClass('alt1');
       $('#speedometerContainer *').off('click');
       $('.spdBtn7').click(toggleBasicSpeedo);
     }
   }
 }
+
+var SPDSBN_Show_Speedometer_Background = "Show Speedometer Background";
+var SPDSBN_Hide_Speedometer_Background = "Hide Speedometer Background";
+var SPDSBN_Speed_Unit = "Speed Unit";
+var SPDSBN_Temperature_Unit = "Temperature Unit";
+var SPDSBN_Fuel_Eff_Unit = "Fuel Eff Unit";
+var SPDSBN_Reset_Times_Speeds = "Reset Times & Speeds";
+var SPDSBN_Popped = "Popped";
+var SPDSBN_Digital_Bar_Speedometer = "Digital Bar Speedometer";
+var SPDSBN_Classic_Speedometer = "Classic Speedometer";
+var SPDSBN_Text_Large = "Text Size: Large";
+var SPDSBN_Text_Regular = "Text Size: Small";
+var SPDSBN_Speed_Analog = "Speed: Analog";
+var SPDSBN_Speed_Digital = "Speed: Digital";
+var SPDSBN_Speed_Bar = "Speed Bar";
+var SPDSBN_Hide_Speed_Bar = "Hide Speed Bar";
+var SPDSBN_Show_Speed_Bar = "Show Speed Bar";
+var SPDSBN_Speedometer_Color = "Speedometer Color";
+var SPDSBN_Theme = "Theme";
+var SPDSBN_Basic = "Basic Speedometer"
+var SPDSBN_Modded = "Modded Speedometer"
+var SPDSBN_Language = "Language";

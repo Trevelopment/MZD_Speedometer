@@ -75,6 +75,11 @@ _speedometerApp.prototype._SpeedoContextReady = function() {
   framework.common.setSbDomainIcon("apps/_speedometer/IcnSbnSpeedometer.png");
   if (barSpeedometerMod) {
     LoadSpeedBarLayout();
+  } else {
+    LoadSpeedoClassicLayout();
+  }
+  if (sbHideInApp) {
+    $('#SbSpeedo, #Sbfuel-bar-wrapper').fadeOut();
   }
 };
 _speedometerApp.prototype._SpeedCtxtInFunction = function() {

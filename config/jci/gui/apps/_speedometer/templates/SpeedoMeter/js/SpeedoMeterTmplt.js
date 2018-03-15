@@ -18,7 +18,9 @@ function SpeedoMeterTmplt(uiaId, parentDiv, templateID, controlProperties) {
   this.longholdTimeout = null;
   this.divElt = null;
   this.templateName = "SpeedoMeterTmplt";
-
+  this.btns = spdBtn.classic;
+  this.classicTemplate = classicSpeedoTmplt;
+  this.valuetable = '';
   this.onScreenClass = "SpeedoMeterTmplt";
 
   log.debug("  templateID in SpeedoMeterTmplt constructor: " + templateID);
@@ -45,86 +47,18 @@ function SpeedoMeterTmplt(uiaId, parentDiv, templateID, controlProperties) {
   this.divElt.innerHTML = '<!-- MZD Speedometer v5 - Variant Mod  -->' +
     '<div id="speedometerContainer">' +
     '<div id="hideIdleBtn"></div>' +
-    ' <div class="spdBtn' + spdBtn.classic.select + ' spdBtnSelect"></div>' +
-    ' <div class="spdBtn' + spdBtn.classic.up + ' spdBtnUp"></div>' +
-    ' <div class="spdBtn' + spdBtn.classic.down + ' spdBtnDown"></div>' +
-    ' <div class="spdBtn' + spdBtn.classic.right + ' spdBtnRight"></div>' +
-    ' <div class="spdBtn' + spdBtn.classic.left + ' spdBtnLeft"></div>' +
-    ' <div class="spdBtn' + spdBtn.classic.hold.select + ' spdBtnSelecth"></div>' +
-    ' <div class="spdBtn' + spdBtn.classic.hold.up + ' spdBtnUph"></div>' +
-    ' <div class="spdBtn' + spdBtn.classic.hold.down + ' spdBtnDownh"></div>' +
-    ' <div class="spdBtn' + spdBtn.classic.hold.right + ' spdBtnRighth"></div>' +
-    ' <div class="spdBtn' + spdBtn.classic.hold.left + ' spdBtnLefth"></div>' +
+    ' <div class="spdBtn' + this.btns.select + ' spdBtnSelect"></div>' +
+    ' <div class="spdBtn' + this.btns.up + ' spdBtnUp"></div>' +
+    ' <div class="spdBtn' + this.btns.down + ' spdBtnDown"></div>' +
+    ' <div class="spdBtn' + this.btns.right + ' spdBtnRight"></div>' +
+    ' <div class="spdBtn' + this.btns.left + ' spdBtnLeft"></div>' +
+    ' <div class="spdBtn' + this.btns.hold.select + ' spdBtnSelecth"></div>' +
+    ' <div class="spdBtn' + this.btns.hold.up + ' spdBtnUph"></div>' +
+    ' <div class="spdBtn' + this.btns.hold.down + ' spdBtnDownh"></div>' +
+    ' <div class="spdBtn' + this.btns.hold.right + ' spdBtnRighth"></div>' +
+    ' <div class="spdBtn' + this.btns.hold.left + ' spdBtnLefth"></div>' +
     '<div id="table_bg">' +
     '<div id="valuetable">' +
-    '<fieldset id="tripDistFieldSet">' +
-    '<legend>Trip Dist. <span class="spunit">(<span class="distUnit">km</span>)<span></legend>' +
-    '<div class="tripDistance">0.00</div>' +
-    '</fieldset>' +
-    '<fieldset id="speedTopFieldSet">' +
-    '<legend>Top Speed</legend>' +
-    '<div class="speedTopValue">0</div>' +
-    '</fieldset>' +
-    '<fieldset id="speedAvgFieldSet">' +
-    '<legend>Avg. Speed</legend>' +
-    '<div class="speedAvgValue">0</div>' +
-    '</fieldset>' +
-    '<fieldset id="gpsAltitudeFieldSet">' +
-    '<legend>Altitude <span class="spunit">(<span class="altUnit">m</span>)<span></legend></legend>' +
-    '<div class="gpsAltitudeValue">-</div>' +
-    '</fieldset>' +
-    // '<fieldset id="gpsAltitudeMinFieldSet">'+
-    //     '<legend>Altitude <span>min</span></legend>'+
-    //     '<div class="gpsAltitudeMin">-</div>'+
-    // '</fieldset>'+
-    // '<fieldset id="gpsAltitudeMaxFieldSet">'+
-    //     '<legend>Altitude <span>max</span></legend>'+
-    //     '<div class="gpsAltitudeMax">-</div>'+
-    // '</fieldset>'+
-    '<fieldset id="gpsAltitudeMinMaxFieldSet">' +
-    '<legend><span>min/max</span></legend>' +
-    '<div class="gpsAltitudeMinMax">---/---</div>' +
-    '</fieldset>' +
-    '<fieldset id="gpsLatitudeFieldSet">' +
-    '<legend>Lat.</legend>' +
-    '<div class="gpsLatitudeValue">---</div>' +
-    '</fieldset>' +
-    '<fieldset id="gpsLongitudeFieldSet">' +
-    '<legend>Lon.</legend>' +
-    '<div class="gpsLongitudeValue">---</div>' +
-    '</fieldset>' +
-    '<fieldset id="tripTimeFieldSet">' +
-    '<legend>Total Time</legend>' +
-    '<div class="tripTimeValue">0:00</div>' +
-    '</fieldset>' +
-    '<fieldset id="idleTimeFieldSet">' +
-    '<legend>Idle Time</legend>' +
-    '<div class="idleTimeValue">0:00</div>' +
-    '</fieldset>' +
-    '<fieldset id="engIdleTimeFieldSet">' +
-    '<legend>Engine Idle</legend>' +
-    '<div class="engineIdleTimeValue">0:00</div>' +
-    '</fieldset>' +
-    '<fieldset id="Drv1AvlFuelEFieldSet">' +
-    '<legend><span class="fuelEffUnit"></span></legend>' +
-    '<div class="Drv1AvlFuelEValue"><span>(0)</span>0</div>' +
-    '</fieldset>' +
-    '<fieldset id="outsideTempFieldSet">' +
-    '<legend>Outside <span class="spunit">(&deg;<span class="tempUnit"></span>)</span></legend>' +
-    '<div class="outsideTempValue">0</div>' +
-    '</fieldset>' +
-    '<fieldset id="intakeTempFieldSet">' +
-    '<legend>Intake <span class="spunit">(&deg;<span class="tempUnit"></span>)</span></legend>' +
-    '<div class="intakeTempValue">0</div>' +
-    '</fieldset>' +
-    '<fieldset id="coolantTempFieldSet">' +
-    '<legend>Coolant <span class="spunit">(&deg;<span class="tempUnit"></span>)</span></legend>' +
-    '<div class="coolantTempValue">0</div>' +
-    '</fieldset>' +
-    '<fieldset id="gearPositionFieldSet">' +
-    '<legend>Gear Position</legend>' +
-    '<div class="gearPositionValue">0</div>' +
-    '</fieldset>' +
     '</div>' +
     '</div>' +
     '<div id="analog">' +
@@ -180,9 +114,34 @@ function SpeedoMeterTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '<legend class="vehDataLegends">Veh Speed <span class="spunit">(<span class="speedUnit">---</span>)<span></legend>' +
     '<div class="vehicleSpeed">0</div>' +
     '</fieldset>' +
-    //'<div class="vehicleSpeed pos0">0</div>' +
-    //'<div class="speedUnit">---</div>' +
+    '<div id="speedo-fuel-bar-wrapper" class="fuel-bar-wrapper">' +
+    '<div id="speedo-fuel-bar-container" class="fuel-bar-container">' +
+    '<span id="speedo-fuel-bar" class="fuel-bar" style="width: 100%;">' +
+    '</span></div></div>' +
+    //'<div class="vehicleSpeed pos0">0</div>'+
+    //'<div class="speedUnit">---</div>'+
     '</div>';
+  for (speedo in this.classicTemplate) {
+    this.valuetable += '<fieldset id="' + this.classicTemplate[speedo].id + '">' +
+      '<legend>' + this.classicTemplate[speedo].name;
+    if (this.classicTemplate[speedo].unitClass !== null) {
+      this.valuetable += '<span class="spunit">(<span class="' + this.classicTemplate[speedo].unitClass + '"></span>)<span>';
+    }
+    this.valuetable += '</legend>' +
+      '<div class="' + this.classicTemplate[speedo].class + '">' + this.classicTemplate[speedo].starting + '</div>' +
+      '</fieldset>';
+  }
+
+  // '<fieldset id="gpsAltitudeMinFieldSet">'+
+  //     '<legend>Altitude <span>min</span></legend>'+
+  //     '<div class="gpsAltitudeMin">-</div>'+
+  // '</fieldset>'+
+  // '<fieldset id="gpsAltitudeMaxFieldSet">'+
+  //     '<legend>Altitude <span>max</span></legend>'+
+  //     '<div class="gpsAltitudeMax">-</div>'+
+  // '</fieldset>'+
+
+  document.getElementById('valuetable').innerHTML = this.valuetable;
   //$.getScript('apps/_speedometer/js/speedometerUpdate.js',
   setTimeout(function() {
     updateSpeedoApp();
@@ -281,7 +240,9 @@ SpeedoMeterTmplt.prototype.handleControllerEvent = function(eventID) {
  * its controls.
  */
 SpeedoMeterTmplt.prototype.cleanUp = function() {
-
+  if (framework.getCurrentApp() !== "_speedometer") {
+    $('#SbSpeedo, #Sbfuel-bar-wrapper').fadeIn();
+  }
 };
 
 framework.registerTmpltLoaded("SpeedoMeterTmplt");

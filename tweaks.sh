@@ -467,7 +467,7 @@ choose_language()
   killall jci-dialog
   if [ $CHOICE -eq 1 ]
   then
-    sed -i 's/var language = "EN";/var language = "DE";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+    sed -i 's/var language = .*;/var language = "DE";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
     log_message "===              CHANGED SPEEDOMETER TO GERMAN VERSION               ==="
   elif [ $CHOICE -eq 2 ]
   then
@@ -478,13 +478,13 @@ choose_language()
     then
       # change to spanish version
       # show_message "CHANGE SPEEDOMETER TO SPANISH..."
-      sed -i 's/var language = "EN";/var language = "ES";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+      sed -i 's/var language = .*;/var language = "ES";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
       log_message "===              CHANGED SPEEDOMETER TO SPANISH VERSION               ==="
     elif [ $CHOICE -eq 1 ]
     then
       # change to french version
       # show_message "CHANGE SPEEDOMETER TO FRENCH..."
-      sed -i 's/var language = "EN";/var language = "FR";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+      sed -i 's/var language = .*;/var language = "FR";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
       log_message "===              CHANGED SPEEDOMETER TO FRENCH VERSION                ==="
     else
       /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="SPEEDOMETER LANGUAGE?" --ok-label="Polish" --cancel-label="Italian" --button3-label="More"
@@ -494,13 +494,13 @@ choose_language()
       then
         # change to polish version
         # show_message "CHANGE SPEEDOMETER TO POLISH..."
-        sed -i 's/var language = "EN";/var language = "PL";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        sed -i 's/var language = .*;/var language = "PL";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
         log_message "===               CHANGED SPEEDOMETER TO POLISH VERSION               ==="
       elif [ $CHOICE -eq 1 ]
       then
         # change to Italian version
         # show_message "CHANGE SPEEDOMETER TO ITALIAN..."
-        sed -i 's/var language = "EN";/var language = "IT";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        sed -i 's/var language = .*;/var language = "IT";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
         log_message "===               CHANGED SPEEDOMETER TO ITALIAN VERSION              ==="
       else
         /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="SPEEDOMETER LANGUAGE?" --ok-label="Slovak" --cancel-label="Turkish" --button3-label="Back To 1st"
@@ -510,13 +510,13 @@ choose_language()
         then
           # change to slovak version
           # show_message "CHANGE SPEEDOMETER TO SLOVAK..."
-          sed -i 's/var language = "EN";/var language = "SK";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+          sed -i 's/var language = .*;/var language = "SK";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
           log_message "===                CHANGED SPEEDOMETER TO SLOVAK VERSION              ==="
         elif [ $CHOICE -eq 1 ]
         then
           # change to Turkish version
           # show_message "CHANGE SPEEDOMETER TO TURKISH..."
-          sed -i 's/var language = "EN";/var language = "TR";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+          sed -i 's/var language = .*;/var language = "TR";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
           log_message "===              CHANGED SPEEDOMETER TO TURKISH VERSION               ==="
         else
           # If we have gotten this far we need to start over
@@ -543,8 +543,27 @@ statusbar_speedo_mods()
   killall jci-dialog
   if [ $CHOICE -eq 0 ]
   then
-    sed -i 's/var sbTemp = false;/var sbTemp = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+    sed -i 's/var sbTemp = .*;/var sbTemp = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
     log_message "===                   ADD TEMPERATURE TO STATUSBAR                    ==="
+  fi
+  
+  /jci/tools/jci-dialog --3-button-dialog --title="SPEEDOMETER CONFIG" --text="STATUSBAR FUEL GUAGE?" --ok-label="TOP" --cancel-label="BOTTOM" --button3-label="NONE"
+  CHOICE=$?
+  killall jci-dialog
+  if [ $CHOICE -eq 1 ]
+  then  
+    sed -i 's/var sbfbPos = .*;/var sbfbPos = "bottombar";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+    log_message "===                   ADD FUEL GAUGE TO STATUSBAR                    ==="
+  elif [ $CHOICE -eq 0 ]
+  then
+    /jci/tools/jci-dialog --confirm --title="SPEEDOMETER CONFIG" --text="STATUSBAR FUEL GUAGE TOP OF THE SCREEN\nABOVE OR BELOW THE STATUSBAR?\n(IN REVERSE THE FUEL BAR MOVES TO THE TOP OF THE SCREEN)" --ok-label="ABOVE" --cancel-label="BELOW"
+    CHOICE=$?
+    if [ $CHOICE -eq 0 ]
+    then
+      sed -i 's/var sbfbPos = .*;/var sbfbPos = "topbar";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+    else
+      sed -i 's/var sbfbPos = .*;/var sbfbPos = "default";/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+    fi
   fi
 }
 
@@ -620,7 +639,7 @@ speedo_install()
     # change compass rotating depending on NAV SD card inside or not
     if [ ! -d /mnt/sd_nav/content/speedcam ] || [ $COMPAT_GROUP -ne 1  ]
     then
-      sed -i 's/var noNavSD = false;/var noNavSD = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+      sed -i 's/var noNavSD = .*;/var noNavSD = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
       log_message "===    Changed compass rotating, because no NAV SD card is inside     ==="
     fi
 
@@ -636,7 +655,7 @@ speedo_install()
       # show_message "CHANGE SPEEDOMETER TO MPH ..."
       if [ $CHOICE -eq 0 ]
       then
-        sed -i 's/var isMPH = true;/var isMPH = false;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        sed -i 's/var isMPH = .*;/var isMPH = false;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
         log_message "===                   CHANGED SPEEDOMETER TO KM/H                     ==="
       fi
 
@@ -657,7 +676,7 @@ speedo_install()
       if [ $CHOICE -eq 1 ]
       then
         # change temp from C to F
-        sed -i 's/var tempIsF = false;/var tempIsF = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        sed -i 's/var tempIsF = .*;/var tempIsF = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
         log_message "===                   TEMPERATURE SET TO FAHRENHEIT                   ==="
       fi
 
@@ -667,7 +686,7 @@ speedo_install()
       if [ $CHOICE -eq 1 ]
       then
         # Bar Speedo Mod
-        sed -i 's/var barSpeedometerMod = true;/var barSpeedometerMod = false;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        sed -i 's/var barSpeedometerMod = .*;/var barSpeedometerMod = false;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
         log_message "===       Set flag for bar speedometer in speedometer-startup.js      ==="
       fi
 
@@ -677,7 +696,7 @@ speedo_install()
       if [ $CHOICE -eq 0 ]
       then
         # Speedo Variant
-        sed -i 's/var startAnalog = false;/var startAnalog = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        sed -i 's/var startAnalog = .*;/var startAnalog = true;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
         log_message "===               START MODED SPEEDOMETER IN ANALOG MODE              ==="
       fi
 
@@ -696,7 +715,7 @@ speedo_install()
       then
         # no small speedometer in statusbar
         # show_message "DISABLE SMALL SPEEDOMETER IN STATUSBAR ..."
-        sed -i 's/var enableSmallSbSpeedo = true;/var enableSmallSbSpeedo = false;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
+        sed -i 's/var enableSmallSbSpeedo = .*;/var enableSmallSbSpeedo = false;/g' /jci/gui/apps/_speedometer/js/speedometer-startup.js
         log_message "===              DISABLE SMALL SPEEDOMETER IN STATUSBAR               ==="
       fi
 
@@ -750,6 +769,8 @@ speedo_install()
 # End of installation
 end_install()
 {
+  sed -i '/^ *$/ d' ${ADDITIONAL_APPS_JSON}
+  cp ${ADDITIONAL_APPS_JSON} "${MYDIR}/bakups/test/additionalApps.after.json"
   cp -a /jci/gui/apps/_speedometer/js/speedometer-startup.js ${MYDIR}/bakups/test/
   cp -a /jci/scripts/stage_wifi.sh ${MYDIR}/bakups/test/stage_wifi-after_speedo.sh
 

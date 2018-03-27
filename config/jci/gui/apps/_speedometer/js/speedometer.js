@@ -736,12 +736,11 @@ $(document).ready(function() {
   function updateFuelGauge(fuelGaugeVal) {
     fuelGaugeVal = $.trim(fuelGaugeVal);
     if ($.isNumeric(fuelGaugeVal)) {
-      lastFuelGaugeValue = Math.round((fuelGaugeVal / fuelGaugeMax) * 100);
-      if (lastFuelGaugeValue > 100) {
-        fuelGaugeMax = Math.round(fuelGaugeVal);
-        lastFuelGaugeValue = 100;
+      if (fuelGaugeVal > fuelGaugeMax) {
+        fuelGaugeMax = fuelGaugeVal;
       }
-      $('.fuelGaugeValue').html(lastFuelGaugeValue + "%");
+      lastFuelGaugeValue = Math.round((fuelGaugeVal / fuelGaugeMax) * fuelGaugeFactor);
+      $('.fuelGaugeValue').html(lastFuelGaugeValue + fuelGaugeValueSuffix);
     }
   }
   // --------------------------------------------------------------------------
@@ -956,6 +955,8 @@ function SpeedometerOverRide(over) {
       enableSmallSbSpeedo = false;
       $('#SbSpeedo').remove();
     }
+    fuelGaugeFactor = SORV.fuelGaugeFactor;
+    fuelGaugeValueSuffix = SORV.fuelGaugeValueSuffix;
   }
 }
 // Swap FieldSets ~ by Trezdog44

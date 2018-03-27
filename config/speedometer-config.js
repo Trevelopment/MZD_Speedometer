@@ -118,4 +118,13 @@ var SORV = {
   // Set to the color theme for Bar SpeedoMeter
   // Theme will be a number 0-5 (0 is default white)
   barTheme: 0,
+
+  // Set suffix appended to gauge value
+  // default is "%" to show available fuel percentage
+  fuelGaugeValueSuffix: "%",
+
+  // Set multiplier to get human readable output fuel value from its internal reading
+  // default is 100 to show remaining percentage
+  // set to fuel tank capacity in liters/gallons etc. and change aforementioned [fuelGaugeValueSuffix] to "L" etc.
+  fuelGaugeFactor: 100,
 };

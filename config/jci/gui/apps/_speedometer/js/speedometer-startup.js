@@ -16,6 +16,8 @@ var tempIsF = false;
 var speedAnimation = false;
 var analogColor = "Red";
 var speedometerTheme = 0;
+var fuelGaugeFactor = 100;
+var fuelGaugeValueSuffix = "%";
 // try not to make changes to the lines below
 if (!window.jQuery) {
   utility.loadScript("addon-common/jquery.min.js");

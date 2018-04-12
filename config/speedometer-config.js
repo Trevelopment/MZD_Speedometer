@@ -3,17 +3,16 @@
 |* Speedometer Configuration - Used to configure position of Speedometer values.         *|
 |* =========================                                                             *|
 |* Main Speedometer Value: [0, 0, 0] - Large, Front, & Center.                           *|
-|* Other Values: [ 0/1:(0 For Main Column OR 1 For Bottom Rows), Row Number, Position ]  *|
+|* [ 0/1/2:(0 For Main Column, 1 For Bottom Rows, 2+ To Hide), Row Number, Position ]    *|
 |* Main Column Positions: 4 Values (1-4 From Top to Bottom)                              *|
 |* Bottom Rows Positions: 5 Values Per Row (1-5 From Left to Right)                      *|
 |* Examples:                                                                             *|
 |* [0, 1, 4] = [Main, Column, 4th position (Bottom of the Column)]                       *|
 |* [1, 3, 1] = [Bottom, 3rd Row, First Position (Left Side)]                             *|
 |* [1, 1, 5] = [Bottom, 1st Row, Last Position (Right Side)]                             *|
-|* To Hide a Value = [1, 1, 0] (Any bottom row position 0 will hide the value)           *|
+|* To Hide a Value = [2, 1, 0] (2 As The First Number)                                   *|
 |* To Change Bottom Row Push Command Knob ("Select")                                     *|
 |* Note: Only numbers inside [] brackets determine position, order in this list DOES NOT *|
-|* ******* DELETE THIS CONFIG FILE TO REUSE YOUR CURRENT CONFIG-SPEEDOMETER.JS ********* *|
 \* ************************************************************************************* */
 var spdBottomRows = 4;   //Number of Bottom Rows
 var spdTbl = {
@@ -37,7 +36,7 @@ var spdTbl = {
   engTop:     [1, 3, 3], //Engine Top Speed
   avgFuel:    [1, 3, 4], //Average Fuel Economy
   coolTemp:   [1, 3, 5], //Coolant Temperature
-  engLoad:    [1, 4, 0], //Engine Load
+  engLoad:    [2, 4, 0], //Engine Load
   gpsLat:     [1, 4, 2], //GPS Latitude
   gpsLon:     [1, 4, 3], //GPS Longitude
   totFuel:    [1, 4, 4], //Total Fuel Economy

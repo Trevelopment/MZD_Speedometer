@@ -1,5 +1,5 @@
 #!/bin/sh
-# tweaks.sh - MZD Speedometer Version 5.6-Pre-release
+# tweaks.sh - MZD Speedometer Version 5.6
 # Configurable Installer
 # By Diginix, Trezdog44, & Many Others
 # GitHub Repo: https://github.com/Trevelopment/MZD_Speedometer
@@ -10,8 +10,8 @@
 hwclock --hctosys
 
 # AIO Variables
-AIO_VER=5.6-Pre.Release
-AIO_DATE=2018.03.16
+AIO_VER=5.6
+AIO_DATE=2018.04.13
 
 # Set to 1 to skip confirmation (configure settings in speedometer-config.js)
 SKIPCONFIRM=0

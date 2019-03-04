@@ -1,3 +1,4 @@
+/* jshint -W117 */
 /*
  Copyright 2016 Herko ter Horst
  __________________________________________________________________________
@@ -69,7 +70,7 @@ _speedometerApp.prototype.appInit = function() {
  * =========================
  */
 _speedometerApp.prototype._StartContextReady = function() {
-  barSpeedometerMod ? aioMagicRoute("_speedometer", "SpeedBar") : aioMagicRoute("_speedometer", "SpeedClassic");
+  aioMagicRoute("_speedometer", barSpeedometerMod ? "SpeedBar" : "SpeedClassic");
 };
 _speedometerApp.prototype._SpeedoContextReady = function() {
   framework.common.setSbDomainIcon("apps/_speedometer/IcnSbnSpeedometer.png");

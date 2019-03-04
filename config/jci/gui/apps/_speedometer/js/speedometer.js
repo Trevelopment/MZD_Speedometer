@@ -1,4 +1,5 @@
 // try not to make changes to the lines below
+/* jshint -W116, -W117 */
 var tripDistCurrent = 0;
 var prevTripDist = 0;
 var tripDistBkp = 0;
@@ -48,6 +49,12 @@ var speedometerLonghold = false;
 var hideSpeedFuel = false;
 var speedometerLayout = null;
 var speedoClassicLayout = null;
+var speedometerIcon = "apps/_speedometer/IcnSbnSpeedometer.png";
+var vehicleDataConnected = false;
+var envDataConnected = false;
+var speedConnectAttempts = 0;
+var speedConnectRetries = 0;
+var speedConMaxRetries = 20;
 
 $.ajax({
   url: 'addon-common/cufon-yui.js',
@@ -82,6 +89,7 @@ $(document).ready(function() {
           updateGPSLongitude(res[8]);
           updateEngineLoad(res[9]);
           updateGearLeverPos(res[10]);
+          vehicleDataConnected = true;
           break;
         case 'envData':
           updateFuelEfficiency(res[1]);
@@ -93,6 +101,7 @@ $(document).ready(function() {
           updateGearPos(res[7]);
           updateFuelGauge(res[8]);
           updateBatSOC(res[9]);
+          envDataConnected = true;
           break;
         default:
           break;
@@ -102,11 +111,17 @@ $(document).ready(function() {
       speedometerWs.send(action);
     };
     speedometerWs.onerror = function(e) {
-      console.log("err: " + e.toString());
+      if (speedConnectRetries > speedConMaxRetries) {
+		console.error("Speedometer Failed to connect to websocket");
+        AIO_SBN("Failed To Start Speedometer", speedometerIcon);
+      } else if (speedConnectRetries < speedConnectAttempts) {
+        speedConnectRetries++;
+        startDataRetrieval(5000);
+      }
     };
   }
-  // --------------------------------------------------------------------------
   // websocket end
+  // --------------------------------------------------------------------------
   // update trip time
   // --------------------------------------------------------------------------
   function updateTripTime() {
@@ -172,9 +187,9 @@ $(document).ready(function() {
     currentSpeed = $.trim(currentSpeed);
     if ($.isNumeric(currentSpeed)) {
       if (isMPH) {
-        speedCurrent = Math.ceil(currentSpeed * 0.006213712);
+        speedCurrent = Math.round(currentSpeed * 0.006213712);
       } else {
-        speedCurrent = Math.ceil(currentSpeed * 0.01);
+        speedCurrent = Math.round(currentSpeed * 0.01);
       }
       // update vehicle top speed
       // --------------------------------------------------------------------------
@@ -198,7 +213,7 @@ $(document).ready(function() {
       if (speedCurrent > 0) {
         totalMoveCount++;
         speedSumTotal += speedCurrent;
-        var avgSpeed = Math.ceil(speedSumTotal / totalMoveCount);
+        var avgSpeed = Math.round(speedSumTotal / totalMoveCount);
         if (speedAvg !== avgSpeed) {
           speedAvg = avgSpeed;
           $('.speedAvgValue').html(speedAvg);
@@ -220,12 +235,12 @@ $(document).ready(function() {
           duration: 950,
           easing: 'linear',
           step: function(now) {
-            var speedCurr = Math.ceil(now);
+            var speedCurr = Math.round(now);
             if (speedAnimation) {
               $this.text(speedCurr);
             }
             if (!engineSpeedBar) {
-              updateSpeedBar(Math.ceil(isMPH ? speedCurr * 1.6 : speedCurr));
+              updateSpeedBar(Math.round(isMPH ? speedCurr * 1.6 : speedCurr));
             }
           },
           complete: function() {}
@@ -361,7 +376,7 @@ $(document).ready(function() {
             duration: 950,
             easing: 'linear',
             step: function(now) {
-              $this.text(Math.ceil(now));
+              $this.text(Math.round(now));
             },
             complete: function() {}
           });
@@ -419,53 +434,22 @@ $(document).ready(function() {
           headingSwitchValue = Math.round(currentGPShead / 22.5);
           // Close enough
           switch (headingSwitchValue) {
-            case 1:
-              direction = "NNE";
-              break;
-            case 2:
-              direction = "NE";
-              break;
-            case 3:
-              direction = "ENE";
-              break;
-            case 4:
-              direction = "E";
-              break;
-            case 5:
-              direction = "ESE";
-              break;
-            case 6:
-              direction = "SE";
-              break;
-            case 7:
-              direction = "SSE";
-              break;
-            case 8:
-              direction = "S";
-              break;
-            case 9:
-              direction = "SSW";
-              break;
-            case 10:
-              direction = "SW";
-              break;
-            case 11:
-              direction = "WSW";
-              break;
-            case 12:
-              direction = "W";
-              break;
-            case 13:
-              direction = "WNW";
-              break;
-            case 14:
-              direction = "NW";
-              break;
-            case 15:
-              direction = "NNW";
-              break;
-            default:
-              direction = "N";
+            case 1: direction = "NNE"; break;
+            case 2: direction = "NE"; break;
+            case 3: direction = "ENE"; break;
+            case 4: direction = "E"; break;
+            case 5: direction = "ESE"; break;
+            case 6: direction = "SE"; break;
+            case 7: direction = "SSE"; break;
+            case 8: direction = "S"; break;
+            case 9: direction = "SSW"; break;
+            case 10: direction = "SW"; break;
+            case 11: direction = "WSW"; break;
+            case 12: direction = "W"; break;
+            case 13: direction = "WNW"; break;
+            case 14: direction = "NW"; break;
+            case 15: direction = "NNW"; break;
+            default: direction = "N";
           }
           if (language === 'DE') {
             direction = direction.replace(/E/g, "O");
@@ -489,53 +473,22 @@ $(document).ready(function() {
         headingSwitchValue = Math.round(currentGPShead / 22.5);
         // Close enough
         switch (headingSwitchValue) {
-          case 1:
-            direction = "SSW";
-            break;
-          case 2:
-            direction = "SW";
-            break;
-          case 3:
-            direction = "WSW";
-            break;
-          case 4:
-            direction = "W";
-            break;
-          case 5:
-            direction = "WNW";
-            break;
-          case 6:
-            direction = "NW";
-            break;
-          case 7:
-            direction = "NNW";
-            break;
-          case 8:
-            direction = "N";
-            break;
-          case 9:
-            direction = "NNE";
-            break;
-          case 10:
-            direction = "NE";
-            break;
-          case 11:
-            direction = "ENE";
-            break;
-          case 12:
-            direction = "E";
-            break;
-          case 13:
-            direction = "ESE";
-            break;
-          case 14:
-            direction = "SE";
-            break;
-          case 15:
-            direction = "SSE";
-            break;
-          default:
-            direction = "S";
+          case 1: direction = "SSW"; break;
+          case 2: direction = "SW"; break;
+          case 3: direction = "WSW"; break;
+          case 4: direction = "W"; break;
+          case 5: direction = "WNW"; break;
+          case 6: direction = "NW"; break;
+          case 7: direction = "NNW"; break;
+          case 8: direction = "N"; break;
+          case 9: direction = "NNE"; break;
+          case 10: direction = "NE"; break;
+          case 11: direction = "ENE"; break;
+          case 12: direction = "E"; break;
+          case 13: direction = "ESE"; break;
+          case 14: direction = "SE"; break;
+          case 15: direction = "SSE"; break;
+          default: direction = "S";
         }
         if (language === 'DE') {
           direction = direction.replace(/E/g, "O");
@@ -628,12 +581,12 @@ $(document).ready(function() {
             duration: 950,
             easing: 'linear',
             step: function(now) {
-              var engineSpeedCurr = Math.ceil(now);
+              var engineSpeedCurr = Math.round(now);
               if (speedAnimation) {
                 $this.text(engineSpeedCurr);
               }
               if (engineSpeedBar) {
-                updateSpeedBar(Math.ceil(engineSpeedCurr / 45));
+                updateSpeedBar(Math.round(engineSpeedCurr / 45));
               }
             },
             complete: function() {
@@ -686,8 +639,11 @@ $(document).ready(function() {
   // --------------------------------------------------------------------------
   function updateCoolantTemp(coolTemp) {
     coolTemp = $.trim(coolTemp);
+    var tempColor = '';
     if ($.isNumeric(coolTemp) && coolTemp !== "0") {
       coolantTemp = coolTemp -= 40;
+      if (coolTemp < 55) tempColor = 'yellow'; // engine cold light threshold
+      if (coolTemp < 30) tempColor = 'blue'; // engine too cold for start
       if (tempIsF) {
         coolTemp = coolTemp * 1.8 + 32;
         coolantTemp = parseFloat(coolTemp.toFixed(1));
@@ -696,6 +652,7 @@ $(document).ready(function() {
     } else {
       coolantTemp = "---"
     }
+    $('.coolantTempValue').css('color', tempColor);
     $('.coolantTempValue').html(coolantTemp);
   }
   // --------------------------------------------------------------------------
@@ -715,19 +672,11 @@ $(document).ready(function() {
     gearLeverPos = $.trim(gearLeverPos);
     if ($.isNumeric(gearLeverPos) && gearLeverPos !== "0") {
       switch (gearLeverPos) {
-        case "1":
-          lastGearLeverPositionValue = "P";
-          break;
-        case "2":
-          lastGearLeverPositionValue = "R";
-          break;
-        case "3":
-          lastGearLeverPositionValue = "N";
-          break;
-        case "4":
-          lastGearLeverPositionValue = "D";
-          break;
-        default:
+        case "1": lastGearLeverPositionValue = "P"; break;
+        case "2": lastGearLeverPositionValue = "R"; break;
+        case "3": lastGearLeverPositionValue = "N"; break;
+        case "4": lastGearLeverPositionValue = "D"; break;
+        default: lastGearLeverPositionValue = "---";
       }
       $('.gearLeverPositionValue').html(lastGearLeverPositionValue);
       automaticTrans = true;
@@ -743,7 +692,7 @@ $(document).ready(function() {
         fuelGaugeMax = Math.ceil(fuelGaugeVal);
       }
       var nextFuelPer = Math.round((fuelGaugeVal / fuelGaugeMax) * 100);
-      lastFuelGaugePercent = Math.abs(lastFuelGaugePercent - nextFuelPer) < 3 || lastFuelGaugePercent === 0 ? nextFuelPer : (nextFuelPer < lastFuelGaugePercent ? lastFuelGaugePercent - 3 : lastFuelGaugePercent + 3);;
+      lastFuelGaugePercent = Math.abs(lastFuelGaugePercent - nextFuelPer) < 3 || lastFuelGaugePercent === 0 ? nextFuelPer : (nextFuelPer < lastFuelGaugePercent ? lastFuelGaugePercent - 3 : lastFuelGaugePercent + 3);
       lastFuelGaugeValue = parseFloat((Math.round((fuelGaugeFactor / 10) * lastFuelGaugePercent) / 10).toFixed(1));
       $('.fuelGaugeValue').html(lastFuelGaugeValue + (fuelGaugeValueSuffix === "%" ? "%" : ""));
       $('.fuel-bar').css('width', lastFuelGaugePercent + "%");
@@ -803,9 +752,9 @@ $(document).ready(function() {
         if ($(this).css('display').indexOf('inline-block') !== -1) visibleIcons++;
       });
       if (visibleIcons > 3) {
-        $('#SbSpeedo').addClass('morespace');
+        $('#SbSpeedo, .StatusBarCtrlIconContainer:nth-child(2)').addClass('morespace');
       } else {
-        $('#SbSpeedo').removeClass('morespace');
+        $('#SbSpeedo, .StatusBarCtrlIconContainer:nth-child(2)').removeClass('morespace');
       }
     }
   }, 1000);
@@ -830,36 +779,16 @@ $(document).ready(function() {
         var barClassName = '.speedBar_' + i;
         if (speed >= i) {
           switch (i) {
-            case 150:
-              backgroundColor = '#FF0000';
-              break;
-            case 145:
-              backgroundColor = '#FF0000';
-              break;
-            case 140:
-              backgroundColor = '#FF0000';
-              break;
-            case 135:
-              backgroundColor = '#FF0000';
-              break;
-            case 130:
-              backgroundColor = '#FF0000';
-              break;
-            case 125:
-              backgroundColor = '#FE2E2E';
-              break;
-            case 120:
-              backgroundColor = '#FF451C';
-              break;
-            case 115:
-              backgroundColor = '#FF6932';
-              break;
-            case 110:
-              backgroundColor = '#FE9A2E';
-              break;
-            case 105:
-              backgroundColor = '#FECC20';
-              break;
+            case 150: backgroundColor = '#FF0000'; break;
+            case 145: backgroundColor = '#FF0000'; break;
+            case 140: backgroundColor = '#FF0000'; break;
+            case 135: backgroundColor = '#FF0000'; break;
+            case 130: backgroundColor = '#FF0000'; break;
+            case 125: backgroundColor = '#FE2E2E'; break;
+            case 120: backgroundColor = '#FF451C'; break;
+            case 115: backgroundColor = '#FF6932'; break;
+            case 110: backgroundColor = '#FE9A2E'; break;
+            case 105: backgroundColor = '#FECC20'; break;
           }
           $(barClassName).css({ 'background-color': backgroundColor });
         } else {
@@ -870,36 +799,16 @@ $(document).ready(function() {
         var barClassName2 = '.speedBar_' + j;
         if (speed >= j) {
           switch (j) {
-            case 100:
-              backgroundColor = '#FFED2E';
-              break;
-            case 95:
-              backgroundColor = '#FFF430';
-              break;
-            case 90:
-              backgroundColor = '#F7FE2E';
-              break;
-            case 85:
-              backgroundColor = '#C8FE2E';
-              break;
-            case 80:
-              backgroundColor = '#9AFE2E';
-              break;
-            case 75:
-              backgroundColor = '#64FE2E';
-              break;
-            case 70:
-              backgroundColor = '#2EFE2E';
-              break;
-            case 65:
-              backgroundColor = '#2EFE64';
-              break;
-            case 60:
-              backgroundColor = '#2EFE9A';
-              break;
-            case 55:
-              backgroundColor = '#58FAD0';
-              break;
+            case 100: backgroundColor = '#FFED2E'; break;
+            case 95: backgroundColor = '#FFF430'; break;
+            case 90: backgroundColor = '#F7FE2E'; break;
+            case 85: backgroundColor = '#C8FE2E'; break;
+            case 80: backgroundColor = '#9AFE2E'; break;
+            case 75: backgroundColor = '#64FE2E'; break;
+            case 70: backgroundColor = '#2EFE2E'; break;
+            case 65: backgroundColor = '#2EFE64'; break;
+            case 60: backgroundColor = '#2EFE9A'; break;
+            case 55: backgroundColor = '#58FAD0'; break;
           }
           $(barClassName2).css({ 'background-color': backgroundColor });
         } else {
@@ -910,36 +819,16 @@ $(document).ready(function() {
         var barClassName3 = '.speedBar_' + k;
         if (speed >= k) {
           switch (k) {
-            case 50:
-              backgroundColor = '#58FAD0';
-              break;
-            case 45:
-              backgroundColor = '#58FAD0';
-              break;
-            case 40:
-              backgroundColor = '#58FAD0';
-              break;
-            case 35:
-              backgroundColor = '#58FAD0';
-              break;
-            case 30:
-              backgroundColor = '#58FAD0';
-              break;
-            case 25:
-              backgroundColor = '#81F7D8';
-              break;
-            case 20:
-              backgroundColor = '#A9F5E1';
-              break;
-            case 15:
-              backgroundColor = '#CEF6EC';
-              break;
-            case 10:
-              backgroundColor = '#E0F8F1';
-              break;
-            case 5:
-              backgroundColor = '#EFFBF8';
-              break;
+            case 50: backgroundColor = '#58FAD0'; break;
+            case 45: backgroundColor = '#58FAD0'; break;
+            case 40: backgroundColor = '#58FAD0'; break;
+            case 35: backgroundColor = '#58FAD0'; break;
+            case 30: backgroundColor = '#58FAD0'; break;
+            case 25: backgroundColor = '#81F7D8'; break;
+            case 20: backgroundColor = '#A9F5E1'; break;
+            case 15: backgroundColor = '#CEF6EC'; break;
+            case 10: backgroundColor = '#E0F8F1'; break;
+            case 5: backgroundColor = '#EFFBF8'; break;
           }
           $(barClassName3).css({ 'background-color': backgroundColor });
         } else {
@@ -948,11 +837,15 @@ $(document).ready(function() {
       }
     }
   }
+  function startDataRetrieval(wait) {
+    setTimeout(function() {
+      speedConnectAttempts++;
+      if (!vehicleDataConnected) retrievedata('vehicleData');
+      if (!envDataConnected) retrievedata('envData');
+    }, wait || 5000);
+  }
   // Start data retrieval
-  setTimeout(function() {
-    retrievedata('vehicleData');
-    retrievedata('envData');
-  }, 15000);
+  startDataRetrieval(10000);
 });
 // Loads the override values from speedometer-config.js
 function SpeedometerOverRide(over) {
@@ -993,7 +886,7 @@ function SpeedoSwapFieldSets() {
       swapOut.removeClass(swapClass).addClass(tempClass);
       temp.removeClass(tempClass).addClass(swapClass);
       if (temp.hasClass('pos0') || swapOut.hasClass('pos0')) {
-        AIO_SBN((temp.hasClass('pos0')) ? temp.children('legend').text() : swapOut.children('legend').text(), "apps/_speedometer/IcnSbnSpeedometer.png");
+        AIO_SBN((temp.hasClass('pos0')) ? temp.children('legend').text() : swapOut.children('legend').text(), speedometerIcon);
       }
       // Save the layout
       SaveSpeedBarLayout();
@@ -1051,7 +944,7 @@ function ClearSpeedBarLayout() {
   if (speedometerLayout !== null) {
     speedometerLayout = null;
     $('.activeDataBar').removeClass('activeDataBar');
-    AIO_SBN("Layout Reset", "apps/_speedometer/IcnSbnSpeedometer.png");
+    AIO_SBN("Layout Reset", speedometerIcon);
     aioMagicRoute("_speedometer", "Start");
   }
 }

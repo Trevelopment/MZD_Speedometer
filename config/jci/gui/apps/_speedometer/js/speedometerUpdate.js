@@ -1,3 +1,4 @@
+/* jshint -W117 */
 function updateSpeedoApp() {
   // remove all disabled/unused values from the DOM
   $('[class*="vehDataBar"].pos0').remove();
@@ -43,14 +44,13 @@ function updateSpeedoApp() {
     // touch to toggle Analog / Digital
     // --------------------------------------------------------------------------
     $('.spdBtn0').click(function() {
-      if ($('#analog').is(':visible')) {
-        $('#digital').show();
-        $('#analog').hide();
-        startAnalog = false;
-      } else {
+      startAnalog = !$('#analog').is(':visible');
+      if (startAnalog) {
         $('#digital').hide();
         $('#analog').show();
-        startAnalog = true;
+      } else {
+        $('#digital').show();
+        $('#analog').hide();
       }
       AIO_SBN((startAnalog ? SPDSBN_Speed_Analog : SPDSBN_Speed_Digital), "apps/_speedometer/templates/SpeedoMeter/images/digital.png");
     })
@@ -308,7 +308,7 @@ function updateSpeedoApp() {
   }
   // Polskie
   else if (language === 'PL') {
-    $('#gpsSpeedFieldSet legend').html('PrÄ™dkoÅ›Ä‡ GPS');
+    $('#gpsSpeedFieldSet legend').html('Prędkość GPS');
     $('#tripDistFieldSet legend').html('Dystans <span class="spunit">(<span class="distUnit">km</span>)</span>');
     $('#speedTopFieldSet legend').html('Prędkość maks.');
     $('#speedAvgFieldSet legend').html('Prędkość śr.');
@@ -571,7 +571,7 @@ function updateSpeedoApp() {
     $('#fuelGaugeFieldSet legend .fuelUnit').text(fuelGaugeValueSuffix);
   }
   $('.fuelGaugeValue').html(lastFuelGaugeValue + (fuelGaugeValueSuffix === "%" ? "%" : ""));
-  (tempIsF) ? $('.tempUnit').html('F'): $('.tempUnit').html('C');
+  $('.tempUnit').html(tempIsF ? 'F' : 'C');
   $('.tripDistance').html(tripDist);
   $('.speedAvgValue').html(speedAvg);
   $('.gpsAltitudeValue').html(GPSaltCurrent);
@@ -581,7 +581,7 @@ function updateSpeedoApp() {
   $('.gearPositionValue').html(lastGearPositionValue);
   $('.gearLeverPositionValue').html(lastGearLeverPositionValue);
   $('.gearPositionValue').html(lastGearPositionValue);
-  if (altGPSmin != 9999) {
+  if (altGPSmin !== 9999) {
     $('.gpsAltitudeMinMax').html(altGPSmin + ' / ' + altGPSmax);
   }
   if (barSpeedometerMod) {
